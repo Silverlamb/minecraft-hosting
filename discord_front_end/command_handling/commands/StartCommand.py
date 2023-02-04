@@ -1,19 +1,16 @@
 import threading
 
-from discord.command_handling.Command import Command
+from discord_front_end.command_handling.Command import Command
 
 """
 Command to start a game server.
 """
-
-
 class StartCommand(Command):
     """
     Creates a new start command.
 
     Expected arguments: none
     """
-
     def __init__(self, discord_msg):
         super().__init__("start")
         self.channel_id = None
@@ -28,9 +25,10 @@ class StartCommand(Command):
     def parse_arguments(self, arguments: list, discord_msg):
         self.guild_id = discord_msg.guild.id
         self.channel_id = discord_msg.channel.id
-        
-        
-    def execute(self):
-        print("Start command executed with {} arguments".format(len(self.arguments)))
-        pass
 
+    """
+    (See parent class)
+    """
+    def execute(self):
+        print("Start command executed with {} arguments".format(self.guild_id))
+        pass
