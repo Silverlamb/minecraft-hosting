@@ -47,7 +47,12 @@ class DiscordClient(discord.Client):
 
         await message.channel.send(self.MSG_CMD_RECEIVED.format(command.get_name().upper()))
 
-        command.execute()
+        try:
+            command.execute()
+        except Exception as e:
+            await message.channel.send(str(e))
+
+
 
 
 

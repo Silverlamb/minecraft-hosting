@@ -17,14 +17,15 @@ class CommandParser:
     Takes a command string and creates the appropriate command object for it.
     """
     def parse_command(self, command_string: str, discord_msg) -> Optional[StartCommand]:
-        string_elements = command_string.split(" ")
         for command in self.command_list:
             if command_string.startswith(command.get_name()):
+                argument_string = command_string.replace(command.get_name(), '')
+                argument_elements = argument_string.split(" ")
+
                 # Create a new command object of the same type as the command in the list
                 command_type = type(command)
                 new_command = command_type()
-                new_command.parse_arguments(string_elements[1:], discord_msg) # TODO Pass only arguments that do not belong to name
+                new_command.parse_arguments(argument_elements, discord_msg)
                 return new_command
 
         return None
-

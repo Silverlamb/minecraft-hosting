@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 """
 Abstract class that represents a general command.
@@ -8,7 +8,7 @@ Its arguments must be parsed through its 'parse_arguments()' method before execu
 """
 
 
-class Command:
+class Command(ABC):
 
     """
     Abstract constructor for a command. Should not be called from outside a constructor of a concrete command class.
