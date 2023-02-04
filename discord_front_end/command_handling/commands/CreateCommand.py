@@ -1,6 +1,7 @@
 import threading
 
 from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
+from discord_front_end.utils.db import MongoGateWay
 
 """
 Command to create a game server.
@@ -12,8 +13,9 @@ class CreateCommand(ServerCommand):
 
     Before this command can be executed, its arguments must be parsed into it.
     """
-    def __init__(self):
-        super().__init__("create")
+
+    def __init__(self, database_gateway: MongoGateWay):
+        super().__init__("create", database_gateway)
         self.discord_msg = None
 
     """

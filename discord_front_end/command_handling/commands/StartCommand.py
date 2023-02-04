@@ -1,6 +1,7 @@
 import threading
 
 from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
+from discord_front_end.utils.db import MongoGateWay
 
 """
 Command to start a game server.
@@ -11,8 +12,8 @@ class StartCommand(ServerCommand):
 
     Before this command can be executed, its arguments must be parsed into it.
     """
-    def __init__(self):
-        super().__init__("start")
+    def __init__(self, database_gateway: MongoGateWay):
+        super().__init__("start", database_gateway)
         self.discord_msg = None
 
     """

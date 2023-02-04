@@ -23,19 +23,27 @@ class Command(ABC):
     Additionally, the discord message object is passed to the command to provide additional information like the author.
     """
     @abstractmethod
-    def parse_arguments(self, arguments: list, discord_msg):
+    def parse_arguments(self, arguments: list, discord_msg) -> None:
         pass
 
 
     """
     Executes the command.
 
+    Every subclass must call this method via super first, before executing its own logic in their execute() method.
+    
     Usually, one command object will only be executed once.
     """
 
     @abstractmethod
-    def execute(self):
+    def execute(self) -> None:
         pass
+
+    """
+    Returns a shallow copy of this command object.
+    """
+    def __copy__(self):
+        return Command(self.name)
 
     """
     Returns the name of this command.
@@ -45,3 +53,4 @@ class Command(ABC):
 
     def get_name(self) -> str:
         return self.name
+
