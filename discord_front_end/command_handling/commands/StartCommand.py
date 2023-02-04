@@ -1,5 +1,6 @@
 import threading
 
+from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
 from discord_front_end.utils.db import MongoGateWay
 
@@ -12,15 +13,15 @@ class StartCommand(ServerCommand):
 
     Before this command can be executed, its arguments must be parsed into it.
     """
-    def __init__(self, database_gateway: MongoGateWay):
-        super().__init__("start", database_gateway)
+    def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateWay):
+        super().__init__("start", responder, database_gateway)
         self.discord_msg = None
 
     """
     (See parent class)
     """
     def __copy__(self):
-        return StartCommand(self.database_gateway)
+        return StartCommand(self.responder, self.database_gateway)
 
     """
     Parses the arguments for this command from the provided argument string list and extracts relevant information form

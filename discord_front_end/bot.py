@@ -4,6 +4,7 @@ import discord
 import dotenv
 
 from command_handling.CommandParser import CommandParser
+from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.utils.db import MongoGateWay
 
 """
@@ -31,7 +32,7 @@ class DiscordClient(discord.Client):
         self.message_content = True
 
         self.database_gateway = MongoGateWay()
-        self.command_parser = CommandParser(self.database_gateway)
+        self.command_parser = CommandParser(self.database_gateway, UserMessageResponder(self))
 
     """
     Handles Messages sent to the Bot
@@ -57,6 +58,7 @@ class DiscordClient(discord.Client):
             await message.channel.send(str(e))
 
         await self.send_response_message(message, self.MSG_CMD_SUCCESS)
+
 
     @staticmethod
     async def send_response_message(message_to_respond_to: discord.Message, response_str: str):

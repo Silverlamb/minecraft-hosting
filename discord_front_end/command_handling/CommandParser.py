@@ -1,23 +1,27 @@
 import copy
 from typing import Optional
 
+from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
 from discord_front_end.command_handling.commands.StartCommand import StartCommand
 from discord_front_end.utils.db import MongoGateWay
 
-"""
-For a given command string, creates the appropriate command objects and gives them the necessary arguments.
-"""
+
 class CommandParser:
-    def __init__(self, database_gateway: MongoGateWay):
+    """
+    For a given command string, creates the appropriate command objects and gives them the necessary arguments.
+    """
+
+    def __init__(self, database_gateway: MongoGateWay, responder: UserMessageResponder):
         # List of the commands that this parser can parse
-        self.command_list = [StartCommand(database_gateway), CreateCommand(database_gateway)]
+        self.command_list = [StartCommand(responder, database_gateway), CreateCommand(responder, database_gateway)]
         pass
 
-    """
-    Takes a command string and creates the appropriate command object for it.
-    """
     def parse_command(self, command_string: str, discord_msg) -> Optional[StartCommand]:
+        """
+        Takes a command string and creates the appropriate command object for it.
+        """
+
         for command_template in self.command_list:
             if command_string.startswith(command_template.get_name()):
                 argument_string = command_string.replace(command_template.get_name(), '')
