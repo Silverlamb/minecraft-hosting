@@ -41,7 +41,6 @@ class CreateCommand(ServerCommand):
     """
     def execute(self) -> None:
         super().execute()
-        self.responder.send_remote_message('server_started', self.discord_msg.channel.id, [42])
 
         # TODO Check whether user has sufficient credits
 
@@ -52,6 +51,7 @@ class CreateCommand(ServerCommand):
     """
     def _create_server(self, guild_id, channel_id, bot_for_messages: discord.Client) -> None:
 
+        # TODO Old code. Will be replaced by using the interface to Ishaan
         instance_data = self.database_gateway.find_instance_one(guild_id)
 
         if instance_data["server_state"] or instance_data["server_present"] or instance_data["is_process"]:
