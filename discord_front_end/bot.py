@@ -32,7 +32,7 @@ class DiscordClient(discord.Client):
         self.message_content = True
 
         self.database_gateway = MongoGateWay()
-        self.command_parser = CommandParser(self.database_gateway, UserMessageResponder(self))
+        self.command_parser = CommandParser(self.database_gateway, UserMessageResponder(self, None))
 
     """
     Handles Messages sent to the Bot

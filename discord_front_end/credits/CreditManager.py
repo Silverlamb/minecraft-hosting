@@ -56,7 +56,8 @@ class CreditManager:
 
         :param guild_id: the guild of which to deduct
         :param hourly_cost: the amount of credits to deduct per hour
-        :param responder: the channel to use to follow up with notifications on this running server.
+        :param responder: the channel to use to follow up with notifications on this running server. It must have the
+                          default channel id set, as this is where the notifications will be sent to.
                           E.g. used to send credit shortage notifications to the user
         """
         if guild_id in self.credit_deduction_task:

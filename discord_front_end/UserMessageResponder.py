@@ -10,11 +10,12 @@ class UserMessageResponder:
     This class manages what precise messages are sent upon the respective events.
     """
 
-    def __init__(self, client: discord.Client, default_channel_id: int):
+    def __init__(self, client: discord.Client, default_channel_id: Optional[int]):
         """
         Creates a new user message responder
         :param client: the discord client to use for sending messages
-        :param default_channel_id: the default channel to send messages to if it is not specified in the send method
+        :param default_channel_id: the default channel to send messages to if it is not specified in the send method.
+                                    If set to None, the channel_id must always be specified for each send method
         """
         self.client = client
         self.default_channel_id = default_channel_id
