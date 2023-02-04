@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 
 import discord
 
@@ -9,13 +10,25 @@ class UserMessageResponder:
     This class manages what precise messages are sent upon the respective events.
     """
 
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: discord.Client, default_channel_id: int):
+        """
+        Creates a new user message responder
+        :param client: the discord client to use for sending messages
+        :param default_channel_id: the default channel to send messages to if it is not specified in the send method
+        """
         self.client = client
+        self.default_channel_id = default_channel_id
 
-    def send_remote_message(self, event_name: str, channel_id, args=None):
+    def send_remote_message(self, event_name: str, channel_id: Optional[int], args=None):
         """
         Creates a new (background) task of a remote message (ie. one sent from outside the class)
+
+        If the channel id is set to None, the object's default channel id is used
         """
+
+        if channel_id is None:
+            channel_id = self.default_channel_id
+
         self.client.loop.create_task(self._remote_message(event_name, channel_id, args))
 
     def send_direct_message(self, id, msg):
@@ -60,7 +73,7 @@ class UserMessageResponder:
                 "Either refill your credits or stop to server",
                 "The server will be shutdown once you can't pay credits anymore"
             ))
-        elif arg == 'credits_warning':
+        elif arg == 'credits_one_hour_notification':
             await self.client.get_channel(channel_id).send("{}! {}. {}.".format(
                 "Your credits will run out in the next hour",
                 "Either refill your credits or stop to server",

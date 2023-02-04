@@ -1,5 +1,6 @@
 import asyncio
 
+from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.credits.FixedTimeIntervalCostThread import FixedTimeIntervalCostThread
 from discord_front_end.utils.db import MongoGateWay
 
@@ -46,9 +47,14 @@ class CreditManager:
         """
         self.database_gateway.update_instance_one(guild_id, {"credits": self.get_credit_balance(guild_id) - credits})
 
-    def start_deduction(self, guild_id: int, hourly_cost: float) -> None:
+    def start_deduction(self, guild_id: int, hourly_cost: float, responder: UserMessageResponder) -> None:
         """
         Starts a task that deducts credits from the credit balance of a guild on an hourly basis
+
+        :param guild_id: the guild of which to deduct
+        :param hourly_cost: the amount of credits to deduct per hour
+        :param responder: the channel to use to follow up with notifications on this running server.
+                          E.g. used to send credit shortage notifications to the user
         """
         if guild_id in self.credit_deduction_task:
             raise Exception("There already is a credit deduction task already running for guild {}".format(guild_id))
