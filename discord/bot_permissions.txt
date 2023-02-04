@@ -1,0 +1,30 @@
+Bot Permissions
+    General Permissions:
+        - View Audit Log
+        - Manage Server
+        - Manage Roles
+        - Manage Channels
+        - Create Instant Invite
+        - Manage Webhooks
+        - Read Message/View Channels
+    
+    Text Permissions:
+        - Send Messages
+        - Create Public Threads
+        - Send Messages in Threads
+        - Send TTS Messages
+        - Manage Messages
+        - Manage Threads
+        - Embed Links
+        - Attach Files
+        - Read Message History
+        - Mention Everyone
+        - Use External Emojis
+        - Use External Stickers
+        - Add Reactions
+        - Use Slash Commands
+
+    Voice Permissions:
+        None
+
+URL: https://discord.com/api/oauth2/authorize?client_id=1071261936127332465&permissions=535529258225&scope=bot
