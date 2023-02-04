@@ -12,7 +12,8 @@ Discord class for discord client
 
 class DiscordClient(discord.Client):
     BOT_TRIGGER = "!"
-    MSG_CMD_RECEIVED = "Command {} received!"
+    MSG_CMD_RECEIVED = "Command {} received"
+    MSG_CMD_NOT_PARSABLE = "Command '{}' not parsable"
 
     """
     Sets and loads env variables in local os environment into token
@@ -39,6 +40,11 @@ class DiscordClient(discord.Client):
 
         command_string = (message.content[1:]) # removes the bot trigger
         command = self.command_parser.parse_command(command_string, message)
+
+        if command is None:
+            await message.channel.send(self.MSG_CMD_NOT_PARSABLE.format(message.content[1:]))
+            return
+
         await message.channel.send(self.MSG_CMD_RECEIVED.format(command.get_name().upper()))
 
         command.execute()

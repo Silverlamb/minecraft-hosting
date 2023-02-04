@@ -7,11 +7,11 @@ Command to start a game server.
 """
 class StartCommand(Command):
     """
-    Creates a new start command.
+    Creates a new start command instance.
 
-    Expected arguments: none
+    Before this command can be executed, its arguments must be parsed into it.
     """
-    def __init__(self, discord_msg):
+    def __init__(self):
         super().__init__("start")
         self.channel_id = None
         self.guild_id = None
