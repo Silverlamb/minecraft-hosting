@@ -1,7 +1,6 @@
 from typing import Optional
 
-import discord
-from discord_front_end.command_handling.Command import Command
+from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
 from discord_front_end.command_handling.commands.StartCommand import StartCommand
 
 """
@@ -10,7 +9,7 @@ For a given command string, creates the appropriate command objects and gives th
 class CommandParser:
     def __init__(self):
         # List of the commands that this parser can parse
-        self.command_list = [StartCommand()]
+        self.command_list = [StartCommand(), CreateCommand()]
         pass
 
     """

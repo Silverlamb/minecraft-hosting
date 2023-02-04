@@ -21,7 +21,17 @@ class ServerCommand(Command, ABC):
     """
 
     def __init__(self, name: str = ''):
-        super().__init__("server" + name)
+        super().__init__("server " + name)
+
+    """
+    (See parent class)
+    
+    Every subclass of ServerCommand must call this method with super first, before executing its own logic.
+    """
+    def execute(self):
+        self.assert_admin(self.discord_msg)
+        # Further logic is executed in the subclass
+
 
     @staticmethod
     def is_admin(discord_msg: discord.Message) -> bool:

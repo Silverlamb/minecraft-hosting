@@ -28,7 +28,7 @@ class StartCommand(ServerCommand):
     (See parent class)
     """
     def execute(self) -> None:
-        self.assert_admin(self.discord_msg)
+        super().execute()
         threading.Thread(target=self._start_server,
                          args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
 

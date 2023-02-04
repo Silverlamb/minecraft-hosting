@@ -13,7 +13,7 @@ class CreateCommand(ServerCommand):
     Before this command can be executed, its arguments must be parsed into it.
     """
     def __init__(self):
-        super().__init__("start")
+        super().__init__("create")
         self.discord_msg = None
 
     """
@@ -29,7 +29,7 @@ class CreateCommand(ServerCommand):
     (See parent class)
     """
     def execute(self) -> None:
-        self.assert_admin(self.discord_msg)
+        super().execute()
         threading.Thread(target=self._create_server,
                          args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
 
