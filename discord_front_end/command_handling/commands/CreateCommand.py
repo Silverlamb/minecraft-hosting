@@ -19,6 +19,12 @@ class CreateCommand(ServerCommand):
         self.discord_msg = None
 
     """
+    (See parent class)
+    """
+    def __copy__(self):
+        return CreateCommand(self.database_gateway)
+
+    """
     Parses the arguments for this command from the provided argument string list and extracts relevant information form
     the discord message object.
 

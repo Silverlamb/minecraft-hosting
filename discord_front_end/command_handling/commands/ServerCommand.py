@@ -11,7 +11,7 @@ Abstract command class for commands that control a game server.
 
 
 class ServerCommand(Command, ABC):
-    HARDCODED_ROOT_USERS = [518217896896495616, 665749352891023392]  # Headrush, Silverlamb
+    HARDCODED_ROOT_USERS = [518217896896495616, 665749352891023392, 568174168370053152] # Headrush, Silverlamb, funcrek
     MSG_NO_PERMISSION = "You do not have permission to use this command."
     MSG_SERVER_NOT_REGISTERED = "The server is not registered with the system yet. Please register first."
 

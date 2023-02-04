@@ -1,3 +1,4 @@
+import copy
 from typing import Optional
 
 from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
@@ -23,7 +24,7 @@ class CommandParser:
                 argument_elements = argument_string.split(" ")
 
                 # Create a new command object of the same type as the command in the list
-                new_command = command_template.copy()
+                new_command = copy.copy(command_template)
                 new_command.parse_arguments(argument_elements, discord_msg)
                 return new_command
 
