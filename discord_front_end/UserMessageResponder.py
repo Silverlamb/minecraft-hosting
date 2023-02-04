@@ -97,6 +97,10 @@ class UserMessageResponder:
         elif arg == 'fetch_created_err':
             await self.client.get_channel(channel_id).send(
                 "You cannot back up a server that has just been created! Please start it once so I can back it up.")
+        elif arg == 'guild_not_registered':
+            await self.client.get_channel(channel_id).send(
+                "Your guild had not been registered yet. You are now registered in the system.")
+
         else:
             print("ERR: Arg '{}' does not exist!".format(arg))
 

@@ -34,19 +34,18 @@ class ServerCommand(Command, ABC):
     def __copy__(self):
         return ServerCommand(self.name, self.responder, self.database_gateway)
 
-    """
-    (See parent class)
-    """
-
     def execute(self):
+        """
+        (See parent class)
+        """
         super().execute()
-        self.assert_discord_server_is_registered(self.discord_msg.guild.id)
+        self.register_guild_if_needed()
         # Further logic is executed in the subclass
 
-
-    def assert_discord_server_is_registered(self, guild_id: int) -> None:
+    def register_guild_if_needed(self) -> None:
         """
-        Raises an exception if the server is not registered with the system yet.
+        Registers the guild that the message came from if the guild is not registered yet.
         """
-        if not self.database_gateway.exist_instance_guild(guild_id):
-            raise PermissionError(self.MSG_SERVER_NOT_REGISTERED)
+        if not self.database_gateway.exist_instance_guild(self.discord_msg.guild.id):
+            self.database_gateway.insert_instance_one(self.discord_msg.guild.id)
+            self.responder.send_remote_message('guild_not_registered', self.discord_msg.channel.id)
