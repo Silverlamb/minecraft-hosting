@@ -40,7 +40,8 @@ class Command(ABC):
         pass
 
     """
-    Returns a shallow copy of this command object.
+    Returns a shallow copy of this command object if arguments have not been parsed into it yet.
+    Otherwise, this method is not guaranteed to return a consistent copy.
     """
     def __copy__(self):
         return Command(self.name)

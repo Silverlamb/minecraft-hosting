@@ -2,6 +2,7 @@ from typing import Optional
 
 from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
 from discord_front_end.command_handling.commands.StartCommand import StartCommand
+from discord_front_end.utils.db import MongoGateWay
 
 """
 For a given command string, creates the appropriate command objects and gives them the necessary arguments.

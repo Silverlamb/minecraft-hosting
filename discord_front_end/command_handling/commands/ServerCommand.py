@@ -13,6 +13,7 @@ Abstract command class for commands that control a game server.
 class ServerCommand(Command, ABC):
     HARDCODED_ROOT_USERS = [518217896896495616, 665749352891023392]  # Headrush, Silverlamb
     MSG_NO_PERMISSION = "You do not have permission to use this command."
+    MSG_SERVER_NOT_REGISTERED = "The server is not registered with the system yet. Please register first."
 
 
     """
@@ -24,10 +25,11 @@ class ServerCommand(Command, ABC):
     def __init__(self, name: str, database_gateway: MongoGateWay):
         super().__init__("server " + name)
         self.database_gateway = database_gateway
+        self.discord_msg = None
 
 
     """
-    Returns a shallow copy of this command object.
+    (See parent class)
     """
     def __copy__(self):
         return ServerCommand(self.name, self.database_gateway)
@@ -38,6 +40,7 @@ class ServerCommand(Command, ABC):
     def execute(self):
         super().execute()
         self.assert_admin(self.discord_msg)
+        self.assert_discord_server_is_registered(self.discord_msg.guild.id)
         # Further logic is executed in the subclass
 
 
@@ -60,3 +63,7 @@ class ServerCommand(Command, ABC):
     def assert_admin(self, discord_msg: discord.Message) -> None:
         if not self.is_admin(discord_msg):
             raise PermissionError(self.MSG_NO_PERMISSION)
+
+    def assert_discord_server_is_registered(self, guild_id: int) -> None:
+        if not self.database_gateway.exist_instance_guild(guild_id):
+            raise PermissionError(self.MSG_SERVER_NOT_REGISTERED)
