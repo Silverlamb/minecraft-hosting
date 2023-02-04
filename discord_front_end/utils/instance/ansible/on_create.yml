@@ -1,0 +1,28 @@
+---
+- name: Server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Send Java JRE Java Installation
+      copy:
+        src: "{{ playbook_dir }}/../{{ jre_path }}"
+        dest: /home/ec2-user/jre.tar.gz
+
+    - name: Unzip JRE File
+      unarchive:
+        src: jre.tar.gz
+        dest: /home/ec2-user/
+        remote_src: yes
+    
+    - name: Remove JRE Zip File
+      shell: rm jre.tar.gz
+
+    - name: Synchronization of the paperMC server templates
+      synchronize:
+        src: "{{ playbook_dir }}/../{{ paper_server_path }}/"
+        dest: /home/ec2-user/paperMC/
+
+    - name: Copy Service
+      copy:
+        src: "{{ playbook_dir }}/../{{ server_service_path }}"
+        dest: /etc/systemd/system/server.service

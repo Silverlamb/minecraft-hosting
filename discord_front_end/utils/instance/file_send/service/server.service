@@ -1,0 +1,14 @@
+[Unit]
+Description=Start Minecraft Server Service
+[Service]
+User=root
+
+WorkingDirectory=/home/ec2-user/paperMC
+
+# ENV variables do not work in serverice file (paths must be absolute)
+ExecStart=/home/ec2-user/jre/bin/java -Xms3096M -Xmx3096M -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=50 -XX:+DisableExplicitGC -XX:TargetSurvivorRatio=90 -XX:G1NewSizePercent=60 -XX:G1MaxNewSizePercent=80 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1MixedGCLiveThresholdPercent=50 -XX:+AlwaysPreTouch -jar server.jar nogui
+
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
