@@ -77,8 +77,8 @@ class UserMessageResponder:
             await self.client.get_channel(channel_id).send("{}! {}. {}.".format(
                 "Your credits will run out in the next hour",
                 "Either refill your credits or stop to server",
-                "The server will be shutdown once you can't pay credits anymore"
-            ))
+                "The server will be shutdown in {}min and {}s you can't pay credits anymore"
+            ).format(args[0], args[1]))
         elif arg == 'credits_out':
             await self.client.get_channel(channel_id).send("Your credits ran out!")
         elif arg == 'server_stopped_forced':

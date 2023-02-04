@@ -1,3 +1,4 @@
+import math
 import threading
 import time
 
@@ -64,6 +65,11 @@ class FixedTimeIntervalCostThread(threading.Thread):
 
         while self.active:
             balance = self.credit_manager.get_credit_balance(self.guild_id)
+
+            if balance < self.hourly_cost:
+                self.stop()
+                self.responder.send_remote_message('server_stopped_forced')
+                return
             self.credit_manager.deduct_credits(self.guild_id, self.hourly_cost)
             self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance])
             self._notify_if_necessary()
@@ -84,5 +90,11 @@ class FixedTimeIntervalCostThread(threading.Thread):
         # 1 hour notification
         if credit_balance < self.hourly_cost * 1:
             self.one_hours_notification_gone_off = True
-            self.responder.send_remote_message('credits_one_hour_notification')
-            # TODO calculate precise shutdown time
+            seconds_left = (credit_balance / self.hourly_cost) * self.sleep_time
+            self.sleep_time = math.floor(seconds_left)
+
+            minutes_left = math.floor(seconds_left / 60)
+            remainder_seconds = seconds_left % 60
+            self.responder.send_remote_message('credits_one_hour_notification', None, [minutes_left, remainder_seconds])
+
+
