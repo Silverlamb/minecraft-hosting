@@ -45,5 +45,13 @@ class CreateCommand(ServerCommand):
     Starts a server based on guild id
     """
     def _create_server(self, guild_id, channel_id) -> None:
-        pass
-        # TODO
+
+        instance_data = self.database_gateway.find_instance_one(guild_id)
+
+        if instance_data["server_state"] or instance_data["server_present"] or instance_data["is_process"]:
+            raise Exception("Server is already running or is being created.")
+
+        # TODO Check whether user has sufficient credits
+
+
+

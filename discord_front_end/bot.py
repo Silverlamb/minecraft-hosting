@@ -58,7 +58,8 @@ class DiscordClient(discord.Client):
 
         await self.send_response_message(message, self.MSG_CMD_SUCCESS)
 
-    async def send_response_message(self, message_to_respond_to: discord.Message, response_str: str):
+    @staticmethod
+    async def send_response_message(message_to_respond_to: discord.Message, response_str: str):
         await message_to_respond_to.channel.send(response_str)
 
 
