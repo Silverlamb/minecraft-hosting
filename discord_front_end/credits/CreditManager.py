@@ -1,6 +1,6 @@
 import asyncio
 
-from discord_front_end.credits.HourlyCostThread import HourlyCostThread
+from discord_front_end.credits.FixedTimeIntervalCostThread import FixedTimeIntervalCostThread
 from discord_front_end.utils.db import MongoGateWay
 
 
@@ -18,6 +18,7 @@ class CreditManager:
 
         # Map of guild_id to credit deduction task, if there is a credit deduction task running for that guild
         self.credit_deduction_task = {}
+        self.deduction_sleep_time = 3600
 
     def get_credit_balance(self, guild_id: int) -> float:
         """
@@ -52,7 +53,8 @@ class CreditManager:
         if guild_id in self.credit_deduction_task:
             raise Exception("There already is a credit deduction task already running for guild {}".format(guild_id))
 
-        self.credit_deduction_task[guild_id] = HourlyCostThread(guild_id, hourly_cost, self)
+        self.credit_deduction_task[guild_id] = FixedTimeIntervalCostThread(guild_id, hourly_cost,
+                                                                           self.deduction_sleep_time, self)
         self.credit_deduction_task[guild_id].start()
 
     def stop_deduction(self, guild_id: int) -> None:
@@ -63,4 +65,11 @@ class CreditManager:
             raise Exception("There is no credit deduction task running for guild {}".format(guild_id))
 
         self.credit_deduction_task[guild_id].stop()
+        uptime = self.credit_deduction_task[guild_id].get_uptime()
         del self.credit_deduction_task[guild_id]
+
+        # Deduct the cost for the last interval that was not finished
+        not_billed_seconds = uptime % self.deduction_sleep_time
+        not_billed_cost = (not_billed_seconds / self.deduction_sleep_time) * \
+                          self.credit_deduction_task[guild_id].get_hourly_cost()
+        self.deduct_credits(guild_id, not_billed_cost)
