@@ -3,6 +3,7 @@ import threading
 from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
 from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
+from discord_front_end.credits.CreditManager import CreditManager
 from discord_front_end.utils.db import MongoGateWay
 
 
@@ -11,13 +12,14 @@ class StopCommand(ServerAdminCommand):
     Command to stop a game server.
     """
 
-    def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateWay):
+    def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateWay, credit_manager: CreditManager):
         """Creates a new stop command instance.
 
         Before this command can be executed, its arguments must be parsed into it.
         """
         super().__init__("stop", responder, database_gateway)
         self.discord_msg = None
+        self.credit_manager = credit_manager
 
     def __copy__(self):
         """

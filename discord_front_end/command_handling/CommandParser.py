@@ -7,6 +7,7 @@ from discord_front_end.command_handling.commands.DestroyCommand import DestroyCo
 from discord_front_end.command_handling.commands.IpCommand import IpCommand
 from discord_front_end.command_handling.commands.StartCommand import StartCommand
 from discord_front_end.command_handling.commands.StopCommand import StopCommand
+from discord_front_end.credits.CreditManager import CreditManager
 from discord_front_end.utils.db import MongoGateWay
 
 
@@ -17,9 +18,10 @@ class CommandParser:
 
     def __init__(self, database_gateway: MongoGateWay, responder: UserMessageResponder):
         # List of the commands that this parser can parse
-        self.command_list = [StartCommand(responder, database_gateway),
+        credit_manager = CreditManager(database_gateway)  # TODO move to a more appropriate place
+        self.command_list = [StartCommand(responder, database_gateway, credit_manager),
                              CreateCommand(responder, database_gateway),
-                             StopCommand(responder, database_gateway),
+                             StopCommand(responder, database_gateway, credit_manager),
                              DestroyCommand(responder, database_gateway),
                              IpCommand(responder, database_gateway),
                              ]

@@ -20,6 +20,11 @@ class UserMessageResponder:
         self.client = client
         self.default_channel_id = default_channel_id
 
+    def copy_with_default_channel_id(self, default_channel_id: int):
+        """ Creates a copy of this object with a new default channel id
+        """
+        return UserMessageResponder(self.client, default_channel_id)
+
     def send_remote_message(self, event_name: str, channel_id: Optional[int], args=None):
         """
         Creates a new (background) task of a remote message (ie. one sent from outside the class)
