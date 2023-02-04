@@ -3,7 +3,7 @@ import threading
 import time
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.credits.CreditManager import CreditManager
+from discord_front_end.credits.CreditColumnDataGateway import CreditColumnDataGateway
 
 
 class FixedTimeIntervalCostThread(threading.Thread):
@@ -13,7 +13,7 @@ class FixedTimeIntervalCostThread(threading.Thread):
     The cost is specified on an hourly basis
     """
 
-    def __init__(self, guild_id: int, hourly_cost: float, sleep_time: int, credit_manager: CreditManager,
+    def __init__(self, guild_id: int, hourly_cost: float, sleep_time: int, credit_data_gateway: CreditColumnDataGateway,
                  responder: UserMessageResponder):
         """
         Creates a new thread that deducts credits from a guild's balance on an hourly basis
@@ -26,7 +26,7 @@ class FixedTimeIntervalCostThread(threading.Thread):
         super().__init__()
         self.guild_id = guild_id
         self.hourly_cost = hourly_cost
-        self.credit_manager = credit_manager
+        self.credit_data_gateway = credit_data_gateway
         self.active = True
         self.sleep_time = sleep_time
         self.start_time = None
@@ -64,13 +64,13 @@ class FixedTimeIntervalCostThread(threading.Thread):
         self.start_time = time.time()
 
         while self.active:
-            balance = self.credit_manager.get_credit_balance(self.guild_id)
+            balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
 
             if balance < self.hourly_cost:
                 self.stop()
                 self.responder.send_remote_message('server_stopped_forced')
                 return
-            self.credit_manager.deduct_credits(self.guild_id, self.hourly_cost)
+            self.credit_data_gateway.deduct_credits(self.guild_id, self.hourly_cost)
             self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance])
             self._notify_if_necessary()
             time.sleep(self.sleep_time)
@@ -85,7 +85,7 @@ class FixedTimeIntervalCostThread(threading.Thread):
 
         This is a hacky design choice to be fast. This should be extracted into observers on the credit balance.
         """
-        credit_balance = self.credit_manager.get_credit_balance(self.guild_id)
+        credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
 
         # 1 hour notification
         if credit_balance < self.hourly_cost * 1:
