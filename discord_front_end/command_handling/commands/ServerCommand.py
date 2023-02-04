@@ -40,7 +40,7 @@ class ServerCommand(Command, ABC):
 
     def execute(self):
         super().execute()
-        #self.assert_discord_server_is_registered(self.discord_msg.guild.id)
+        self.assert_discord_server_is_registered(self.discord_msg.guild.id)
         # Further logic is executed in the subclass
 
 

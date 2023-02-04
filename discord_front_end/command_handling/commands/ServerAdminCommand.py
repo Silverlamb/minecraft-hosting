@@ -41,7 +41,7 @@ class ServerAdminCommand(ServerCommand, ABC):
 
     def execute(self):
         super().execute()
-        #self.assert_admin(self.discord_msg)
+        self.assert_admin(self.discord_msg)
         # Further logic is executed in the subclass
 
     @staticmethod
