@@ -1,11 +1,12 @@
 import threading
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
+from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
 from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
 from discord_front_end.utils.db import MongoGateWay
 
 
-class DestroyCommand(ServerCommand):
+class DestroyCommand(ServerAdminCommand):
     """
     Command to stop a game server.
     """
@@ -15,7 +16,7 @@ class DestroyCommand(ServerCommand):
 
         Before this command can be executed, its arguments must be parsed into it.
         """
-        super().__init__("stop", responder, database_gateway)
+        super().__init__("destroy", responder, database_gateway)
         self.discord_msg = None
 
     def __copy__(self):

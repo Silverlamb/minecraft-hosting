@@ -3,7 +3,10 @@ from typing import Optional
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
+from discord_front_end.command_handling.commands.DestroyCommand import DestroyCommand
+from discord_front_end.command_handling.commands.IpCommand import IpCommand
 from discord_front_end.command_handling.commands.StartCommand import StartCommand
+from discord_front_end.command_handling.commands.StopCommand import StopCommand
 from discord_front_end.utils.db import MongoGateWay
 
 
@@ -14,7 +17,12 @@ class CommandParser:
 
     def __init__(self, database_gateway: MongoGateWay, responder: UserMessageResponder):
         # List of the commands that this parser can parse
-        self.command_list = [StartCommand(responder, database_gateway), CreateCommand(responder, database_gateway)]
+        self.command_list = [StartCommand(responder, database_gateway),
+                             CreateCommand(responder, database_gateway),
+                             StopCommand(responder, database_gateway),
+                             DestroyCommand(responder, database_gateway),
+                             IpCommand(responder, database_gateway),
+                             ]
         pass
 
     def parse_command(self, command_string: str, discord_msg) -> Optional[StartCommand]:

@@ -3,14 +3,15 @@ import threading
 import discord
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
+from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
 from discord_front_end.utils.db import MongoGateWay
 
 """
 Command to create a game server.
 """
-class CreateCommand(ServerCommand):
 
+
+class CreateCommand(ServerAdminCommand):
     """
     Creates a new create command instance.
 
@@ -24,6 +25,7 @@ class CreateCommand(ServerCommand):
     """
     (See parent class)
     """
+
     def __copy__(self):
         return CreateCommand(self.responder, self.database_gateway)
 
@@ -33,31 +35,29 @@ class CreateCommand(ServerCommand):
 
     Expected arguments in the string arguments list: none.
     """
+
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         self.discord_msg = discord_msg
 
     """
     (See parent class)
     """
+
     def execute(self) -> None:
         super().execute()
 
         # TODO Check whether user has sufficient credits
 
-        threading.Thread(target=self._create_server,args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
+        threading.Thread(target=self._create_server,
+                         args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
 
     """
     Starts a server based on guild id
     """
-    def _create_server(self, guild_id, channel_id, bot_for_messages: discord.Client) -> None:
 
+    def _create_server(self, guild_id, channel_id, bot_for_messages: discord.Client) -> None:
         # TODO Old code. Will be replaced by using the interface to Ishaan
         instance_data = self.database_gateway.find_instance_one(guild_id)
 
         if instance_data["server_state"] or instance_data["server_present"] or instance_data["is_process"]:
             raise Exception("Server is already running or is being created.")
-
-
-
-
-

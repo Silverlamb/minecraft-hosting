@@ -40,31 +40,13 @@ class ServerCommand(Command, ABC):
 
     def execute(self):
         super().execute()
-        self.assert_admin(self.discord_msg)
-        self.assert_discord_server_is_registered(self.discord_msg.guild.id)
+        #self.assert_discord_server_is_registered(self.discord_msg.guild.id)
         # Further logic is executed in the subclass
 
-    """
-    Returns whether the user who sent the message has admin permissions.
-    """
-
-    @staticmethod
-    def is_admin(discord_msg: discord.Message) -> bool:
-        has_admin_role = discord.utils.get(discord_msg.guild.roles, name="Admin")
-        has_admin_permission = discord_msg.author.guild_permissions.administrator
-        is_root_user = discord_msg.author.id in ServerCommand.HARDCODED_ROOT_USERS
-
-        return has_admin_role or has_admin_permission or is_root_user
-
-    """
-    Raises an exception if the user who sent the message does not have admin permissions.
-    Otherwise, returns without doing anything.
-    """
-
-    def assert_admin(self, discord_msg: discord.Message) -> None:
-        if not self.is_admin(discord_msg):
-            raise PermissionError(self.MSG_NO_PERMISSION)
 
     def assert_discord_server_is_registered(self, guild_id: int) -> None:
+        """
+        Raises an exception if the server is not registered with the system yet.
+        """
         if not self.database_gateway.exist_instance_guild(guild_id):
             raise PermissionError(self.MSG_SERVER_NOT_REGISTERED)

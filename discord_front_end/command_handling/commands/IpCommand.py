@@ -15,7 +15,7 @@ class IpCommand(ServerCommand):
 
         Before this command can be executed, its arguments must be parsed into it.
         """
-        super().__init__("stop", responder, database_gateway)
+        super().__init__("ip", responder, database_gateway)
         self.discord_msg = None
 
     def __copy__(self):

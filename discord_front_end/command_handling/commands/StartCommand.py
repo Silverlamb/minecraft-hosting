@@ -1,11 +1,11 @@
 import threading
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
+from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
 from discord_front_end.utils.db import MongoGateWay
 
 
-class StartCommand(ServerCommand):
+class StartCommand(ServerAdminCommand):
     """
     Command to start a game server.
     """
