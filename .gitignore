@@ -35,3 +35,9 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Old bot files
+old_bot.py
+
+# IDEs
+.idea
