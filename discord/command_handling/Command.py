@@ -4,7 +4,7 @@ from abc import abstractmethod
 Abstract class that represents a general command.
 
 A command must be executable with through its 'execute()' method.
-Every concrete command class has a constructor that takes the commands arguments as a string array and parses them.
+Its arguments must be parsed through its 'parse_arguments()' method before executing the command.
 """
 
 
@@ -17,6 +17,15 @@ class Command:
     """
     def __init__(self, name: str):
         self.name = name
+
+    """
+    Takes the commands arguments as a string array and parses them.
+    Additionally, the discord message object is passed to the command to provide additional information like the author.
+    """
+    @abstractmethod
+    def parse_arguments(self, arguments: list, discord_msg):
+        pass
+
 
     """
     Executes the command.
@@ -36,4 +45,3 @@ class Command:
 
     def get_name(self) -> str:
         return self.name
-

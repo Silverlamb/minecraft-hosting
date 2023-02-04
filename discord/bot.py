@@ -12,6 +12,7 @@ Discord class for discord client
 
 class DiscordClient(discord.Client):
     BOT_TRIGGER = "!"
+    MSG_CMD_RECEIVED = "Command {} received!"
 
     """
     Sets and loads env variables in local os environment into token
@@ -33,11 +34,14 @@ class DiscordClient(discord.Client):
 
     async def on_message(self, message):
         # if the message is the bot or does not have the '!' at the beginning then it is ignored
-        if message.author == self.user or message.content[0] != BOT_TRIGGER:
+        if message.author == self.user or message.content[0] != self.BOT_TRIGGER:
             return
 
         command_string = (message.content[1:]) # removes the bot trigger
-        command = self.command_parser.parse_command(message)
+        command = self.command_parser.parse_command(command_string, message)
+        await message.channel.send(self.MSG_CMD_RECEIVED.format(command.get_name().upper()))
+
         command.execute()
+
 
 
