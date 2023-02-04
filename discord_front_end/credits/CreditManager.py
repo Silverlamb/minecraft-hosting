@@ -49,7 +49,10 @@ class CreditManager:
 
     def start_deduction(self, guild_id: int, hourly_cost: float, responder: UserMessageResponder) -> None:
         """
-        Starts a task that deducts credits from the credit balance of a guild on an hourly basis
+        Starts a task that deducts credits from the credit balance of a guild on an hourly basis.
+
+        Checks whether the user has enough credits to pay for the first interval. If not, the task is not started and
+        an exception is raised.
 
         :param guild_id: the guild of which to deduct
         :param hourly_cost: the amount of credits to deduct per hour
@@ -58,6 +61,10 @@ class CreditManager:
         """
         if guild_id in self.credit_deduction_task:
             raise Exception("There already is a credit deduction task already running for guild {}".format(guild_id))
+
+        if not self.can_afford(guild_id, hourly_cost):
+            balance = self.get_credit_balance(guild_id)
+            raise Exception("Your credits ({}) are not sufficient to pay the first interval.".format(balance))
 
         self.credit_deduction_task[guild_id] = FixedTimeIntervalCostThread(guild_id, hourly_cost,
                                                                            self.deduction_sleep_time, self)
@@ -75,7 +82,7 @@ class CreditManager:
         del self.credit_deduction_task[guild_id]
 
         # Deduct the cost for the last interval that was not finished
-        not_billed_seconds = uptime % self.deduction_sleep_time
-        not_billed_cost = (not_billed_seconds / self.deduction_sleep_time) * \
+        not_used_seconds = self.deduction_sleep_time - (uptime % self.deduction_sleep_time)
+        not_used_cost = (not_used_seconds / self.deduction_sleep_time) * \
                           self.credit_deduction_task[guild_id].get_hourly_cost()
-        self.deduct_credits(guild_id, not_billed_cost)
+        self.add_credits(guild_id, not_used_cost)

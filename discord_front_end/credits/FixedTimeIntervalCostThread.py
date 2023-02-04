@@ -63,11 +63,11 @@ class FixedTimeIntervalCostThread(threading.Thread):
         self.start_time = time.time()
 
         while self.active:
-            time.sleep(self.sleep_time)
             balance = self.credit_manager.get_credit_balance(self.guild_id)
             self.credit_manager.deduct_credits(self.guild_id, self.hourly_cost)
             self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance])
             self._notify_if_necessary()
+            time.sleep(self.sleep_time)
 
     def _notify_if_necessary(self):
         """
