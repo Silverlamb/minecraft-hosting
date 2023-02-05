@@ -86,26 +86,24 @@ class FixedTimeIntervalCostThread(threading.Thread):
         """
         credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
 
-        # 1 hour notification
-        if credit_balance < self.hourly_cost:
-            seconds_left = (credit_balance / self.hourly_cost) * self.sleep_time
-            self.sleep_time = math.floor(seconds_left)
+        seconds_left = (credit_balance / self.hourly_cost) * self.sleep_time
+        self.sleep_time = math.floor(seconds_left)
 
-            minutes_left = math.floor(seconds_left / 60)
-            remainder_seconds = seconds_left % 60
-            self.responder.send_remote_message('credits_one_hour_notification', None, [minutes_left, remainder_seconds])
+        minutes_left = math.floor(seconds_left / 60)
+        remainder_seconds = seconds_left % 60
+        self.responder.send_remote_message('credits_one_hour_notification', None, [minutes_left, remainder_seconds])
 
-            time.sleep(self.sleep_time)
+        time.sleep(self.sleep_time)
 
-            # Only charge if the user has not stopped in the meantime or the user has more credits again
-            credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
-            if self.active and credit_balance < self.hourly_cost:
-                self.stop()
-                self.responder.send_remote_message('server_stopped_forced', None, [])
-                actual_partial_cost = self.get_uptime() % self.sleep_time * self.hourly_cost
-                cost = min(credit_balance, actual_partial_cost)  # Makes sure we don't deduct more than the balance
-                self.credit_data_gateway.deduct_credits(self.guild_id, cost)
-                self.unregister_function(self.guild_id)
+        # Only charge if the user has not stopped in the meantime or the user has more credits again
+        credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
+        if self.active and credit_balance < self.hourly_cost:
+            self.stop()
+            self.responder.send_remote_message('server_stopped_forced', None, [])
+            actual_partial_cost = self.get_uptime() % self.sleep_time * self.hourly_cost
+            cost = min(credit_balance, actual_partial_cost)  # Makes sure we don't deduct more than the balance
+            self.credit_data_gateway.deduct_credits(self.guild_id, cost)
+            self.unregister_function(self.guild_id)
 
     def _notify_if_necessary(self):
         """
