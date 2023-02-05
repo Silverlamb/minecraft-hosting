@@ -49,4 +49,7 @@ class StartCommand(ServerAdminCommand):
         self.credit_manager.start_deduction(self.discord_msg.guild.id, StartCommand.HOURLY_CREDIT_DEDUCTION,
                                             defaulted_responder)
 
-        threading.Thread(target=self.server_manager.server_start, args=(self.discord_msg.guild.id,)).start()
+        threading.Thread(target=self.server_manager.server_start, args=(self.discord_msg.guild.id, 
+                                                                         self.discord_msg.channel.id, 
+                                                                         self.responder
+                                                                         )).start()

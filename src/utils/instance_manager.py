@@ -156,15 +156,15 @@ class InstanceManager:
                     })
 
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
-                #client.send_remote_message('server_created', channel_id)
+                responder.send_remote_message('server_created', channel_id)
             else:
                 pass
-                #client.send_remote_message('server_created', channel_id)
+                responder.send_remote_message('server_created', channel_id)
         except Exception as e: # reset everything back to normal state
             current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
             if not instance_data["is_process"] and current_instance_data["is_process"]:
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
-            #client.send_remote_message('server_state_err', channel_id)
+            responder.send_remote_message('server_state_err', channel_id)
             print(e)
 
     """
@@ -184,7 +184,7 @@ class InstanceManager:
     """
     Starts a server based on guild id
     """
-    def server_start(self, guild_id, channel_id = None, client = None):
+    def server_start(self, guild_id, channel_id = None, responder: UserMessageResponder = None):
         instance_data = self.mongo_gateway.find_instance_one(guild_id)
         try:
             if instance_data["server_state"] and not instance_data["server_present"] and not instance_data["is_process"]:
@@ -198,17 +198,17 @@ class InstanceManager:
                     })
 
                 if instance_data['server_status'] == self.CREATED_STATUS:
-                    #client.send_remote_message('first_server_started', channel_id)
+                    responder.send_remote_message('first_server_started', channel_id)
                     print("This is a new server")
                 else:
-                    #client.send_remote_message('server_started', channel_id, [instance_ip])
+                    responder.send_remote_message('server_started', channel_id, [instance_ip])
                     print("This is not a new server")
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
         except Exception as e:
             current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
             if not instance_data["is_process"] and current_instance_data["is_process"]:
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
-            #client.send_remote_message('server_state_err', channel_id)
+            responder.send_remote_message('server_state_err', channel_id)
             print(e)
 
     """
