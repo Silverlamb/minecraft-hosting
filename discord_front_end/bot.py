@@ -59,7 +59,7 @@ class DiscordClient(discord.Client):
                                        + " at line " + str(e.__traceback__.tb_lineno))
             # TODO Remove explicit debug print out
 
-        await self.send_response_message(message, self.MSG_CMD_SUCCESS)
+        await self.send_response_message(message, self.MSG_CMD_SUCCESS) # TODO remove (debug)
 
 
     @staticmethod

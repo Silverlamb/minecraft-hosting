@@ -3,6 +3,7 @@ from typing import Optional
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
 from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
+from discord_front_end.command_handling.commands.CreditBalanceCommand import CreditBalanceCommand
 from discord_front_end.command_handling.commands.DestroyCommand import DestroyCommand
 from discord_front_end.command_handling.commands.IpCommand import IpCommand
 from discord_front_end.command_handling.commands.StartCommand import StartCommand
@@ -26,6 +27,7 @@ class CommandParser:
                              StopCommand(responder, database_gateway, credit_manager),
                              DestroyCommand(responder, database_gateway),
                              IpCommand(responder, database_gateway),
+                             CreditBalanceCommand(responder, credit_data_gateway)
                              ]
         pass
 

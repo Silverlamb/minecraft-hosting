@@ -71,7 +71,7 @@ class FixedTimeIntervalCostThread(threading.Thread):
                 self.responder.send_remote_message('server_stopped_forced')
                 return
             self.credit_data_gateway.deduct_credits(self.guild_id, self.hourly_cost)
-            self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance])
+            self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance]) #TODO only if balance is low
             self._notify_if_necessary()
             time.sleep(self.sleep_time)
 

@@ -69,6 +69,8 @@ class UserMessageResponder:
                 "This might be because it is in a state that is not changeable from the command provided.",
                 "Try doing !server state to see which state it is"
             ))
+        elif arg == 'current_balance':
+            await self.client.get_channel(channel_id).send("Your guild's current balance is {} credits".format(args[0]))
         elif arg == 'insufficient_funds':
             await self.client.get_channel(channel_id).send("Insufficent amount of credits! Do !credit to see balance.")
         elif arg == 'credits_charge':
