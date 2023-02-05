@@ -72,6 +72,8 @@ class UserMessageResponder:
                 "Try doing !server state to see which state it is"
             ))
 
+        elif arg == 'server_in_wrong_state':
+             await self.client.get_channel(channel_id).send("This command does not work in the server's current state")
         elif arg == 'current_balance':
             await self.client.get_channel(channel_id).send("Your guild's current balance is {} credits".format(
                 round(args[0], 2)))
