@@ -44,3 +44,6 @@ old_bot.py
 
 # Guild files
 src/guild_instances/*
+
+# Demo data
+demo_data/*
