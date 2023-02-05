@@ -43,4 +43,4 @@ old_bot.py
 *__pycache__*
 
 # Guild files
-guild_instances/*
+src/guild_instances/*
