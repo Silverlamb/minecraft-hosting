@@ -41,7 +41,8 @@ class CreditManager:
             raise Exception("Your credits ({}) are not sufficient to pay the first interval.".format(balance))
 
         self.credit_deduction_task[guild_id] = FixedTimeIntervalCostThread(guild_id, hourly_cost,
-                                                                           self.deduction_sleep_time, self, responder)
+                                                                           self.deduction_sleep_time,
+                                                                           self.credit_column_data_gateway, responder)
         self.credit_deduction_task[guild_id].start()
 
     def stop_deduction(self, guild_id: int) -> None:

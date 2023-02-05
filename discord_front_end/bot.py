@@ -55,7 +55,8 @@ class DiscordClient(discord.Client):
         try:
             command.execute()
         except Exception as e:
-            await message.channel.send(str(e))
+            await message.channel.send("ERROR:" + str(e) + "in" + e.__traceback__.tb_frame.f_code.co_filename
+                                       + "at line" + str(e.__traceback__.tb_lineno))
 
         await self.send_response_message(message, self.MSG_CMD_SUCCESS)
 
