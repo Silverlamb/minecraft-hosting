@@ -70,7 +70,8 @@ class UserMessageResponder:
                 "Try doing !server state to see which state it is"
             ))
         elif arg == 'current_balance':
-            await self.client.get_channel(channel_id).send("Your guild's current balance is {} credits".format(args[0]))
+            await self.client.get_channel(channel_id).send("Your guild's current balance is {} credits".format(
+                round(args[0], 2)))
         elif arg == 'insufficient_funds':
             await self.client.get_channel(channel_id).send("Insufficent amount of credits! Do !credit to see balance.")
         elif arg == 'credits_charge':

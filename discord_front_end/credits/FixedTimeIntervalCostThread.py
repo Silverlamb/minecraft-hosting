@@ -68,10 +68,16 @@ class FixedTimeIntervalCostThread(threading.Thread):
 
             if balance < self.hourly_cost:
                 self.stop()
-                self.responder.send_remote_message('server_stopped_forced')
+                self.responder.send_remote_message('server_stopped_forced', None, [])
+                actual_partial_cost = self.get_uptime() % self.sleep_time * self.hourly_cost
+                cost = min(balance, actual_partial_cost)  # Makes sure we don't deduct more than the balance
+                self.credit_data_gateway.deduct_credits(self.guild_id, cost)
                 return
+
             self.credit_data_gateway.deduct_credits(self.guild_id, self.hourly_cost)
-            self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance]) #TODO only if balance is low
+
+            # TODO only if balance is low
+            self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance - self.hourly_cost])
             self._notify_if_necessary()
             time.sleep(self.sleep_time)
 
@@ -96,5 +102,3 @@ class FixedTimeIntervalCostThread(threading.Thread):
             minutes_left = math.floor(seconds_left / 60)
             remainder_seconds = seconds_left % 60
             self.responder.send_remote_message('credits_one_hour_notification', None, [minutes_left, remainder_seconds])
-
-
