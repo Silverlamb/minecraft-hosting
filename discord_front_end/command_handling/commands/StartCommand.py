@@ -45,7 +45,7 @@ class StartCommand(ServerAdminCommand):
         super().execute()
 
         defaulted_responder = self.responder.copy_with_default_channel_id(self.discord_msg.channel)
-        self.credit_manager.start_deduction(self.discord_msg.author.id, StartCommand.HOURLY_CREDIT_DEDUCTION,
+        self.credit_manager.start_deduction(self.discord_msg.guild.id, StartCommand.HOURLY_CREDIT_DEDUCTION,
                                             defaulted_responder)
 
         # threading.Thread(target=self._start_server,
