@@ -70,13 +70,8 @@ class FixedTimeIntervalCostThread(threading.Thread):
             balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
 
             if balance < self.hourly_cost:
-                self.stop()
-                self.responder.send_remote_message('server_stopped_forced', None, [])
-                actual_partial_cost = self.get_uptime() % self.sleep_time * self.hourly_cost
-                cost = min(balance, actual_partial_cost)  # Makes sure we don't deduct more than the balance
-                self.credit_data_gateway.deduct_credits(self.guild_id, cost)
-                self.unregister_function(self.guild_id)
-                return
+                self.handle_credits_running_out()
+                continue
 
             self.credit_data_gateway.deduct_credits(self.guild_id, self.hourly_cost)
 
@@ -84,6 +79,33 @@ class FixedTimeIntervalCostThread(threading.Thread):
             self.responder.send_remote_message('credits_charge', None, [self.hourly_cost, balance - self.hourly_cost])
             self._notify_if_necessary()
             time.sleep(self.sleep_time)
+
+    def handle_credits_running_out(self):
+        """
+        Handles the case when the user aborts the credit deduction
+        """
+        credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
+
+        # 1 hour notification
+        if credit_balance < self.hourly_cost:
+            seconds_left = (credit_balance / self.hourly_cost) * self.sleep_time
+            self.sleep_time = math.floor(seconds_left)
+
+            minutes_left = math.floor(seconds_left / 60)
+            remainder_seconds = seconds_left % 60
+            self.responder.send_remote_message('credits_one_hour_notification', None, [minutes_left, remainder_seconds])
+
+            time.sleep(self.sleep_time)
+
+            # Only charge if the user has not stopped in the meantime or the user has more credits again
+            credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
+            if self.active and credit_balance < self.hourly_cost:
+                self.stop()
+                self.responder.send_remote_message('server_stopped_forced', None, [])
+                actual_partial_cost = self.get_uptime() % self.sleep_time * self.hourly_cost
+                cost = min(credit_balance, actual_partial_cost)  # Makes sure we don't deduct more than the balance
+                self.credit_data_gateway.deduct_credits(self.guild_id, cost)
+                self.unregister_function(self.guild_id)
 
     def _notify_if_necessary(self):
         """
@@ -95,14 +117,5 @@ class FixedTimeIntervalCostThread(threading.Thread):
 
         This is a hacky design choice to be fast. This should be extracted into observers on the credit balance.
         """
-        credit_balance = self.credit_data_gateway.get_credit_balance(self.guild_id)
-
-        # 1 hour notification
-        if credit_balance < self.hourly_cost * 1:
-            self.one_hours_notification_gone_off = True
-            seconds_left = (credit_balance / self.hourly_cost) * self.sleep_time
-            self.sleep_time = math.floor(seconds_left)
-
-            minutes_left = math.floor(seconds_left / 60)
-            remainder_seconds = seconds_left % 60
-            self.responder.send_remote_message('credits_one_hour_notification', None, [minutes_left, remainder_seconds])
+        pass
+        # TODO
