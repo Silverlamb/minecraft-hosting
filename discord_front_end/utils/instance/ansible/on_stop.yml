@@ -1,0 +1,9 @@
+---
+- name: Stopping
+  hosts: all
+  become: yes
+  tasks:
+    - name: Stop Server
+      systemd:
+        name: server
+        state: stopped

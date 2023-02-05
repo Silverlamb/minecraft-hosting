@@ -5,6 +5,8 @@ import time
 import dotenv
 
 class InstanceManager:
+    CREATED_STATUS = "Created (Stopped)"
+
     def __init__(self, guild_instances_path = '../guild_instances', file_send = 'file_send', instance_file_path = 'instance') -> None:
         self.guild_instances_path = guild_instances_path
         self.file_send = file_send
@@ -58,8 +60,7 @@ class InstanceManager:
     Checks if the instance's state is 'stopped'
     TODO: Add a timeout functionality
     """
-    def state_ready_stopped(self, guild_id: int) -> None:
-        instance_id = self.mongo_gateway.find_instance_one(guild_id)['instance_id']
+    def state_ready_stopped(self, guild_id: int, instance_id) -> None:
         stopped_instance = False
         while(not stopped_instance):
             ec2_resource = boto3.resource(
@@ -79,8 +80,7 @@ class InstanceManager:
     Checks if the instance's state is 'running'
     #TODO: Add a timeout functionality
     """
-    def state_ready_running(self, guild_id: int) -> None:
-        instance_id = self.mongo_gateway.find_instance_one(guild_id)['instance_id']
+    def state_ready_running(self, guild_id: int, instance_id) -> None:
         running_instance = False
         while(not running_instance):
             ec2_resource = boto3.resource('ec2', 
@@ -125,9 +125,8 @@ class InstanceManager:
     Stops the server after create
     """
     def server_stop_on_create(self, guild_id, instance_id):
-        self.state_ready_running(guild_id)
+        self.state_ready_running(guild_id, instance_id)
         os.system('aws ec2 stop-instances --region us-east-2 --instance-ids {}'.format(instance_id))
-
 
     """
     Creates a server based on guild id
@@ -152,7 +151,7 @@ class InstanceManager:
                     guild_id, {
                     "server_state": True,
                     "server_present": False,
-                    "server_status": "Created (Stopped)",
+                    "server_status": self.CREATED_STATUS,
                     })
 
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
@@ -164,9 +163,101 @@ class InstanceManager:
             #client.send_remote_message('server_state_err', channel_id)
             print(e)
 
+    """
+    Starts already set up file system remotely
+    """
+    def remote_instance_start(self, guild_id, instance_id):
+        self.state_ready_stopped(guild_id, instance_id)
+        os.system('aws ec2 start-instances --region us-east-2 --instance-ids {}'.format(instance_id))
+        self.state_ready_running(guild_id, instance_id)
+        os.system('aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --instance-ids {} --output=text > {}/{}/ip.txt'.format(instance_id, self.guild_instances_path, guild_id))
+        with open("{}/{}/ip.txt".format(self.guild_instances_path, guild_id), "r") as f:
+            instance_ip = f.read()
+        os.system("cd {}/ansible; python3 write.py {}/{} {}".format(self.instance_file_path, self.guild_instances_path, guild_id, instance_ip))
+        os.system("cd {}/ansible; ansible-playbook on_start.yml -i ../../{}/{}/inventory".format(self.instance_file_path, self.guild_instances_path, guild_id))
+        return instance_ip
+
+    """
+    Starts a server based on guild id
+    """
+    def server_start(self, guild_id, channel_id = None, client = None):
+        instance_data = self.mongo_gateway.find_instance_one(guild_id)
+        try:
+            if instance_data["server_state"] and not instance_data["server_present"] and not instance_data["is_process"]:
+                self.mongo_gateway.update_instance_one(guild_id, {"is_process": True})
+                instance_ip = self.remote_instance_start(guild_id, instance_data['instance_id']).replace('\n', '')
+
+                self.mongo_gateway.update_instance_one(guild_id, {
+                        "server_present": True,
+                        "server_status": "Started",
+                        "ip": instance_ip
+                    })
+
+                if instance_data['server_status'] == self.CREATED_STATUS:
+                    #client.send_remote_message('first_server_started', channel_id)
+                    print("This is a new server")
+                else:
+                    #client.send_remote_message('server_started', channel_id, [instance_ip])
+                    print("This is not a new server")
+                self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
+        except Exception as e:
+            current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
+            if not instance_data["is_process"] and current_instance_data["is_process"]:
+                self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
+            #client.send_remote_message('server_state_err', channel_id)
+            print(e)
+
+    """
+    Stops already set up file system remotely
+    """
+    def remote_instance_stop(self, guild_id, instance_id):
+        self.state_ready_running(guild_id, instance_id)
+        os.system("cd {}/ansible; ansible-playbook on_stop.yml -i ../../{}/{}/inventory".format(self.instance_file_path, self.guild_instances_path, guild_id))
+        os.system('aws ec2 stop-instances --region us-east-2 --instance-ids {}'.format(instance_id))
+
+    """
+    Stops a server based on guild id
+    """
+    def server_stop(self, guild_id = None, channel_id = None):
+        instance_data = self.mongo_gateway.find_instance_one(guild_id)
+        try:
+            if instance_data["server_state"] and instance_data["server_present"] and not instance_data["is_process"]:
+                self.mongo_gateway.update_instance_one(guild_id, {"is_process": True})
+
+                self.remote_instance_stop(guild_id, instance_data['instance_id'])
+
+
+                self.mongo_gateway.update_instance_one(guild_id, {
+                        "server_present": False,
+                        "server_status": "Stopped",
+                        "is_process": False,
+                        "ip": ""
+                    })
+                # client.send_remote_message('server_stopped', channel_id)
+                print("Server stopped")
+        except Exception as e:
+            current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
+            if not instance_data["is_process"] and current_instance_data["is_process"]:
+                self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
+            # client.send_remote_message('server_state_err', channel_id)
+            print(e)
+
+    """
+    Destroys entire remote system
+    """
+    def remote_instance_destroy(self, guild_id):
+        self.mongo_gateway.update_instance_one(guild_id, {"is_process": True})
+        os.system("cd {}/{}/terraform; terraform destroy -auto-approve".format(self.guild_instances_path, guild_id))
+        self.mongo_gateway.update_instance_one(guild_id, {
+            "server_state": False,
+            "server_present": False,
+            "server_status": "Not Created Yet",
+            "ip": "",
+            "instance_id": "",
+            "is_process": False
+        })
+
 x = InstanceManager()
 y = MongoGateway()
-y.delete_instance_one(0)
-y.insert_instance_one(0)
-x.server_create(0)
 
+x.remote_instance_destroy(0)

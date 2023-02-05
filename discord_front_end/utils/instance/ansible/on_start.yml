@@ -1,0 +1,9 @@
+---
+- name: Starting
+  hosts: all
+  become: yes
+  tasks:
+    - name: Start Server
+      systemd:
+        name: server
+        state: started
