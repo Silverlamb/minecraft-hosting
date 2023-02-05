@@ -43,6 +43,6 @@ class CreditBalanceCommand(Command):
         super().execute()
 
         balance = self.credit_data_gateway.get_credit_balance(self.discord_msg.guild.id)
-        self.responder.send_remote_message('current_balance', self.discord_msg.channel.id, balance)
+        self.responder.send_remote_message('current_balance', self.discord_msg.channel.id, [balance])
 
 

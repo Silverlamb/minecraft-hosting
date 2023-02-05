@@ -25,7 +25,7 @@ class UserMessageResponder:
         """
         return UserMessageResponder(self.client, default_channel_id)
 
-    def send_remote_message(self, event_name: str, channel_id: Optional[int], args=None):
+    def send_remote_message(self, event_name: str, channel_id: Optional[int], args: list = None) -> None:
         """
         Creates a new (background) task of a remote message (ie. one sent from outside the class)
 
@@ -59,8 +59,8 @@ class UserMessageResponder:
                 "Server started successfully! Server address: ``{}``".format(args[0]))
         elif arg == 'server_stopped':
             await self.client.get_channel(channel_id).send(("Server stopped successfully! You were refunded {} credits "
-                                                           "for a partially used time interval. Your credit balance is "
-                                                              "{}").format(round(args[0], 3), round(args[1], 3)))
+                                                            "for a partially used time interval. Your credit balance is "
+                                                            "{}").format(round(args[0], 3), round(args[1], 3)))
         elif arg == 'server_destroyed':
             await self.client.get_channel(channel_id).send("Server destroyed successfully!")
         elif arg == 'server_state_err':
@@ -84,11 +84,11 @@ class UserMessageResponder:
                 "The server will be shutdown once you can't pay credits anymore"
             ))
         elif arg == 'credits_one_hour_notification':
-            await self.client.get_channel(channel_id).send("{}! {}. {}.".format(
-                "Your credits will run out in the next hour",
-                "Either refill your credits or stop to server",
-                "The server will be shutdown in {}min and {}s you can't pay credits anymore"
-            ).format(args[0], args[1]))
+            await self.client.get_channel(channel_id).send((
+                                                               "Your credits will run out in the next hour. "
+                                                               "Either refill your credits or stop the server. "
+                                                               "The server will be forcefully shutdown in {}min and {}s."
+                                                           ).format(args[0], round(args[1])))
         elif arg == 'credits_out':
             await self.client.get_channel(channel_id).send("Your credits ran out!")
         elif arg == 'server_stopped_forced':
