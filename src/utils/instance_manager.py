@@ -1,5 +1,6 @@
 import os
 from utils.mongo_gateway import MongoGateway
+from UserMessageResponder import UserMessageResponder
 import boto3
 import time
 import dotenv
@@ -131,7 +132,7 @@ class InstanceManager:
     """
     Creates a server based on guild id
     """
-    def server_create(self, guild_id, channel_id = None, client = None):
+    def server_create(self, guild_id, channel_id = None, responder: UserMessageResponder = None):
         instance_data = self.mongo_gateway.find_instance_one(guild_id)
 
         try:

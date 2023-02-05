@@ -45,5 +45,9 @@ class CreateCommand(ServerAdminCommand):
         """
         (See parent class)
         """
+
         super().execute()
-        threading.Thread(target=self.server_manager.server_create, args=(self.discord_msg.guild.id,)).start()
+        threading.Thread(target=self.server_manager.server_create, args=(self.discord_msg.guild.id, 
+                                                                         self.discord_msg.channel.id, 
+                                                                         self.responder
+                                                                         )).start()
