@@ -46,6 +46,4 @@ class CreateCommand(ServerAdminCommand):
         (See parent class)
         """
         super().execute()
-        print("Execute Command entered and ready to launch thread")
         threading.Thread(target=self.server_manager.server_create, args=(self.discord_msg.guild.id,)).start()
-        print("Instance Manager thread launched")

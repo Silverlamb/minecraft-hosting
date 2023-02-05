@@ -112,7 +112,6 @@ class InstanceManager:
     def remote_instance_setup(self, guild_id: int) -> None:
         os.system("cd {}/{}/terraform; terraform init".format(self.guild_instances_path, guild_id))
         os.system("cd {}/{}/terraform; terraform apply -auto-approve".format(self.guild_instances_path, guild_id))
-        print("here2")
         os.system('cd {}/ansible; ansible-playbook on_create.yml -e "jre_path={} paper_server_path={} server_service_path={}" -i ../../../{}/{}/inventory'.format(
             "{}instance".format(os.path.abspath(__file__).replace(os.path.basename(__file__), '')),
             "{}/jre/19.0.2_7.tar.gz".format(self.file_send),
