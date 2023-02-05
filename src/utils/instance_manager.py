@@ -7,11 +7,11 @@ import dotenv
 class InstanceManager:
     CREATED_STATUS = "Created (Stopped)"
 
-    def __init__(self, guild_instances_path = '../guild_instances', file_send = 'file_send', instance_file_path = 'instance') -> None:
+    def __init__(self, guild_instances_path = 'guild_instances', file_send = 'file_send', instance_file_path = 'utils/instance') -> None:
         self.guild_instances_path = guild_instances_path
         self.file_send = file_send
         self.instance_file_path = instance_file_path
-        self.dot_terraform_file_path = "{}.terraform".format(os.path.abspath(__file__).replace(__file__, ''))
+        self.dot_terraform_file_path = "{}.terraform".format(os.path.abspath(__file__).replace(os.path.basename(__file__), ''))
         dotenv.load_dotenv(dotenv.find_dotenv())
         os.environ["TF_DATA_DIR"] = self.dot_terraform_file_path
         self.mongo_gateway = MongoGateway()
@@ -112,8 +112,9 @@ class InstanceManager:
     def remote_instance_setup(self, guild_id: int) -> None:
         os.system("cd {}/{}/terraform; terraform init".format(self.guild_instances_path, guild_id))
         os.system("cd {}/{}/terraform; terraform apply -auto-approve".format(self.guild_instances_path, guild_id))
-        os.system('cd {}/ansible; ansible-playbook on_create.yml -e "jre_path={} paper_server_path={} server_service_path={}" -i ../../{}/{}/inventory'.format(
-            self.instance_file_path,
+        print("here2")
+        os.system('cd {}/ansible; ansible-playbook on_create.yml -e "jre_path={} paper_server_path={} server_service_path={}" -i ../../../{}/{}/inventory'.format(
+            "{}instance".format(os.path.abspath(__file__).replace(os.path.basename(__file__), '')),
             "{}/jre/19.0.2_7.tar.gz".format(self.file_send),
             "{}/paperMC".format(self.file_send),
             "{}/service/server.service".format(self.file_send),
@@ -155,7 +156,10 @@ class InstanceManager:
                     })
 
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
-                #client.send_remote_message('server_created', channel_id) 
+                #client.send_remote_message('server_created', channel_id)
+            else:
+                pass
+                #client.send_remote_message('server_created', channel_id)
         except Exception as e: # reset everything back to normal state
             current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
             if not instance_data["is_process"] and current_instance_data["is_process"]:
