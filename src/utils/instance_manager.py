@@ -222,7 +222,7 @@ class InstanceManager:
     """
     Stops a server based on guild id
     """
-    def server_stop(self, guild_id = None, channel_id = None):
+    def server_stop(self, guild_id = None, channel_id = None, responder: UserMessageResponder = None):
         instance_data = self.mongo_gateway.find_instance_one(guild_id)
         try:
             if instance_data["server_state"] and instance_data["server_present"] and not instance_data["is_process"]:
@@ -237,19 +237,19 @@ class InstanceManager:
                         "is_process": False,
                         "ip": ""
                     })
-                # client.send_remote_message('server_stopped', channel_id)
+                responder.send_remote_message('server_stopped', channel_id)
                 print("Server stopped")
         except Exception as e:
             current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
             if not instance_data["is_process"] and current_instance_data["is_process"]:
                 self.mongo_gateway.update_instance_one(guild_id, {"is_process": False})
-            # client.send_remote_message('server_state_err', channel_id)
+            responder.send_remote_message('server_state_err', channel_id)
             print(e)
 
     """
     Destroys entire remote system
     """
-    def remote_instance_destroy(self, guild_id):
+    def server_destroy(self, guild_id):
         self.mongo_gateway.update_instance_one(guild_id, {"is_process": True})
         os.system("cd {}/{}/terraform; terraform destroy -auto-approve".format(self.guild_instances_path, guild_id))
         self.mongo_gateway.update_instance_one(guild_id, {

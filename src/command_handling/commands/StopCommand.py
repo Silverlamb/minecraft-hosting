@@ -43,8 +43,10 @@ class StopCommand(ServerAdminCommand):
         """
         super().execute()
 
-        threading.Thread(target=None, # TODO link stop backend
-                         args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
+        threading.Thread(target=self.server_manager.server_stop, args=(self.discord_msg.guild.id, 
+                                                                         self.discord_msg.channel.id, 
+                                                                         self.responder
+                                                                         )).start()
 
         self.credit_manager.stop_deduction(self.discord_msg.guild.id)
 

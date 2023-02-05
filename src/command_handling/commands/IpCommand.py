@@ -40,7 +40,12 @@ class IpCommand(ServerCommand):
         """
         super().execute()
 
-        threading.Thread(target=None, # TODO link stop backend
-                         args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
+        instance_data = self.mongo_gateway.find_instance_one(self.discord_msg.guild.id)
+        ip_string = instance_data['ip']
+
+        if ip_string == '':
+            raise Exception("You must start the server before you can get the IP address! Run '!server start.'")
+        else:
+            self.responder.send_remote_message('print_ip', self.discord_msg.channel.id, [ip_string])
 
 
