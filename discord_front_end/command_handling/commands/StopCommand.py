@@ -25,7 +25,7 @@ class StopCommand(ServerAdminCommand):
         """
         (See parent class)
         """
-        return StopCommand(self.responder, self.database_gateway)
+        return StopCommand(self.responder, self.database_gateway, self.credit_manager)
 
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         """

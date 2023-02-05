@@ -48,8 +48,8 @@ class CreateCommand(ServerAdminCommand):
 
         # TODO Check whether user has sufficient credits
 
-        threading.Thread(target=self._create_server,
-                         args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
+        #threading.Thread(target=self._create_server,
+        #                 args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
 
     """
     Starts a server based on guild id

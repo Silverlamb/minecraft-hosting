@@ -27,7 +27,7 @@ class StartCommand(ServerAdminCommand):
         """
         (See parent class)
         """
-        return StartCommand(self.responder, self.database_gateway)
+        return StartCommand(self.responder, self.database_gateway, self.credit_manager)
 
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         """
