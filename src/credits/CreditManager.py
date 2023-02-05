@@ -20,7 +20,7 @@ class CreditManager:
         self.credit_deduction_task = {}
         # Map of guild_id to the responder to use when following up on the related credit deduction task
         self.responder_channel = {}
-        self.deduction_sleep_time = 3600
+        self.deduction_sleep_time = 15 # TODO DEMO ONLY: Reset to 3600
 
     def start_deduction(self, guild_id: int, hourly_cost: float, responder: UserMessageResponder) -> None:
         """

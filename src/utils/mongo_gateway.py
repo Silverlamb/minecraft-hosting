@@ -19,7 +19,7 @@ class MongoGateway:
         # Template dictionary to initiate
         self.instance_doc = lambda guild_id: {
             "guild_id": guild_id,
-            "credits": 0.0,
+            "credits": 2000.0, # TODO DEMO ONLY: Reset to 0.
             "server_state": False,
             "server_present": False,
             "is_process": False,

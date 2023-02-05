@@ -42,16 +42,16 @@ class StopCommand(ServerAdminCommand):
         (See parent class)
         """
         super().execute()
-
-        threading.Thread(target=self.server_manager.server_stop, args=(self.discord_msg.guild.id, 
-                                                                         self.discord_msg.channel.id, 
-                                                                         self.responder
-                                                                         )).start()
         
         # TODO Hacky solution: The check - whether starting is allowed - should be extracted to command-level and
         # thus wrapped around both the call to credit manager and the instance manager
         instance_data = self.database_gateway.find_instance_one(self.discord_msg.guild.id)
         if instance_data["server_state"] and instance_data["server_present"] and not instance_data["is_process"]:
+            threading.Thread(target=self.server_manager.server_stop, args=(self.discord_msg.guild.id, 
+                                                                    self.discord_msg.channel.id, 
+                                                                    self.responder
+                                                                    )).start()
+            
             self.credit_manager.stop_deduction(self.discord_msg.guild.id)
         else:
             self.responder.send_remote_message('server_in_wrong_state', self.discord_msg.channel.id, [])
