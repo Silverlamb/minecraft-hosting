@@ -1,10 +1,11 @@
 import copy
 import threading
 
-from src.UserMessageResponder import UserMessageResponder
-from src.command_handling.commands.ServerAdminCommand import ServerAdminCommand
-from src.credits.CreditManager import CreditManager
-from src.utils.db import MongoGateWay
+from UserMessageResponder import UserMessageResponder
+from command_handling.commands.ServerAdminCommand import ServerAdminCommand
+from credits.CreditManager import CreditManager
+from utils.mongo_gateway import MongoGateway
+from utils.instance_manager import InstanceManager
 
 
 class StartCommand(ServerAdminCommand):
@@ -14,12 +15,12 @@ class StartCommand(ServerAdminCommand):
 
     HOURLY_CREDIT_DEDUCTION = 60
 
-    def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateWay, credit_manager: CreditManager):
+    def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateway, server_manager: InstanceManager, credit_manager: CreditManager):
         """Creates a new start command instance.
 
         Before this command can be executed, its arguments must be parsed into it.
         """
-        super().__init__("start", responder, database_gateway)
+        super().__init__("start", responder, database_gateway, server_manager)
         self.discord_msg = None
         self.credit_manager = credit_manager
 
@@ -27,7 +28,7 @@ class StartCommand(ServerAdminCommand):
         """
         (See parent class)
         """
-        return StartCommand(self.responder, self.database_gateway, self.credit_manager)
+        return StartCommand(self.responder, self.database_gateway, self.server_manager, self.credit_manager)
 
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         """

@@ -2,9 +2,10 @@ from abc import ABC
 
 import discord
 
-from src.UserMessageResponder import UserMessageResponder
-from src.command_handling.Command import Command
-from src.utils.db import MongoGateWay
+from UserMessageResponder import UserMessageResponder
+from command_handling.Command import Command
+from utils.mongo_gateway import MongoGateway
+from utils.instance_manager import InstanceManager
 
 
 class ServerCommand(Command, ABC):
@@ -16,7 +17,7 @@ class ServerCommand(Command, ABC):
     MSG_NO_PERMISSION = "You do not have permission to use this command."
     MSG_SERVER_NOT_REGISTERED = "The server is not registered with the system yet. Please register first."
 
-    def __init__(self, name: str, responder: UserMessageResponder, database_gateway: MongoGateWay):
+    def __init__(self, name: str, responder: UserMessageResponder, database_gateway: MongoGateway, server_manager: InstanceManager):
         """
         Creates a new server command. The concrete command name specified by the name parameter is used as a sub-name.
 
@@ -25,6 +26,7 @@ class ServerCommand(Command, ABC):
 
         super().__init__("server " + name, responder)
         self.database_gateway = database_gateway
+        self.server_manager = server_manager
         self.discord_msg = None
 
     """
@@ -32,7 +34,7 @@ class ServerCommand(Command, ABC):
     """
 
     def __copy__(self):
-        return ServerCommand(self.name, self.responder, self.database_gateway)
+        return ServerCommand(self.name, self.responder, self.database_gateway, self.server_manager)
 
     def execute(self):
         """

@@ -4,8 +4,8 @@ import discord
 import dotenv
 
 from command_handling.CommandParser import CommandParser
-from src.UserMessageResponder import UserMessageResponder
-from src.utils.db import MongoGateWay
+from UserMessageResponder import UserMessageResponder
+from utils.mongo_gateway import MongoGateway
 
 """
 Discord class for discord client
@@ -31,7 +31,7 @@ class DiscordClient(discord.Client):
         self.token = os.environ["DISCORD_TOKEN"]  # specific to discord client
         self.message_content = True
 
-        self.database_gateway = MongoGateWay()
+        self.database_gateway = MongoGateway()
         self.command_parser = CommandParser(self.database_gateway, UserMessageResponder(self, None))
 
     """

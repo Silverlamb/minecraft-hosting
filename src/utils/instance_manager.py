@@ -1,5 +1,5 @@
 import os
-from mongo_gateway import MongoGateway
+from utils.mongo_gateway import MongoGateway
 import boto3
 import time
 import dotenv
@@ -256,8 +256,3 @@ class InstanceManager:
             "instance_id": "",
             "is_process": False
         })
-
-x = InstanceManager()
-y = MongoGateway()
-
-x.remote_instance_destroy(0)

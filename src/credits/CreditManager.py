@@ -1,8 +1,8 @@
 import asyncio
 
-from src.UserMessageResponder import UserMessageResponder
-from src.credits.CreditColumnDataGateway import CreditColumnDataGateway
-from src.credits.FixedTimeIntervalCostThread import FixedTimeIntervalCostThread
+from UserMessageResponder import UserMessageResponder
+from credits.CreditColumnDataGateway import CreditColumnDataGateway
+from credits.FixedTimeIntervalCostThread import FixedTimeIntervalCostThread
 
 
 class CreditManager:

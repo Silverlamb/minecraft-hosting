@@ -1,16 +1,17 @@
 import copy
 from typing import Optional
 
-from src.UserMessageResponder import UserMessageResponder
-from src.command_handling.commands.CreateCommand import CreateCommand
-from src.command_handling.commands.CreditBalanceCommand import CreditBalanceCommand
-from src.command_handling.commands.DestroyCommand import DestroyCommand
-from src.command_handling.commands.IpCommand import IpCommand
-from src.command_handling.commands.StartCommand import StartCommand
-from src.command_handling.commands.StopCommand import StopCommand
-from src.credits.CreditColumnDataGateway import CreditColumnDataGateway
-from src.credits.CreditManager import CreditManager
-from src.utils.db import MongoGateWay
+from UserMessageResponder import UserMessageResponder
+from command_handling.commands.CreateCommand import CreateCommand
+from command_handling.commands.CreditBalanceCommand import CreditBalanceCommand
+from command_handling.commands.DestroyCommand import DestroyCommand
+from command_handling.commands.IpCommand import IpCommand
+from command_handling.commands.StartCommand import StartCommand
+from command_handling.commands.StopCommand import StopCommand
+from credits.CreditColumnDataGateway import CreditColumnDataGateway
+from credits.CreditManager import CreditManager
+from utils.mongo_gateway import MongoGateway
+from utils.instance_manager import InstanceManager
 
 
 class CommandParser:
@@ -18,15 +19,17 @@ class CommandParser:
     For a given command string, creates the appropriate command objects and gives them the necessary arguments.
     """
 
-    def __init__(self, database_gateway: MongoGateWay, responder: UserMessageResponder):
+    def __init__(self, database_gateway: MongoGateway, responder: UserMessageResponder):
         # List of the commands that this parser can parse
-        credit_data_gateway = CreditColumnDataGateway(database_gateway)  # TODO move to a more appropriate place
+        # TODO move gateway and manager creation to a more appropriate place
+        credit_data_gateway = CreditColumnDataGateway(database_gateway)  
         credit_manager = CreditManager(credit_data_gateway)
-        self.command_list = [StartCommand(responder, database_gateway, credit_manager),
-                             CreateCommand(responder, database_gateway),
-                             StopCommand(responder, database_gateway, credit_manager),
-                             DestroyCommand(responder, database_gateway),
-                             IpCommand(responder, database_gateway),
+        server_manager = InstanceManager()
+        self.command_list = [StartCommand(responder, database_gateway, server_manager, credit_manager),
+                             CreateCommand(responder, database_gateway, server_manager),
+                             StopCommand(responder, database_gateway, server_manager, credit_manager),
+                             DestroyCommand(responder, database_gateway, server_manager),
+                             IpCommand(responder, database_gateway, server_manager),
                              CreditBalanceCommand(responder, credit_data_gateway)
                              ]
         pass

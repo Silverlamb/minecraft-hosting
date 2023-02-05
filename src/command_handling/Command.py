@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from src.UserMessageResponder import UserMessageResponder
+from UserMessageResponder import UserMessageResponder
 
 """
 Abstract class that represents a general command.

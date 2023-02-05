@@ -2,8 +2,8 @@ import math
 import threading
 import time
 
-from src.UserMessageResponder import UserMessageResponder
-from src.credits.CreditColumnDataGateway import CreditColumnDataGateway
+from UserMessageResponder import UserMessageResponder
+from credits.CreditColumnDataGateway import CreditColumnDataGateway
 
 
 class FixedTimeIntervalCostThread(threading.Thread):

@@ -1,10 +1,8 @@
 import threading
 
-from src.UserMessageResponder import UserMessageResponder
-from src.command_handling.Command import Command
-from src.command_handling.commands.ServerCommand import ServerCommand
-from src.credits.CreditColumnDataGateway import CreditColumnDataGateway
-from src.utils.db import MongoGateWay
+from UserMessageResponder import UserMessageResponder
+from command_handling.Command import Command
+from credits.CreditColumnDataGateway import CreditColumnDataGateway
 
 
 class CreditBalanceCommand(Command):

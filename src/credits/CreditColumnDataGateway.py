@@ -1,4 +1,4 @@
-from src.utils.db import MongoGateWay
+from utils.mongo_gateway import MongoGateway
 
 
 class CreditColumnDataGateway:
@@ -8,7 +8,7 @@ class CreditColumnDataGateway:
     Acts as a Column Data Gateway for the credit column in the instances document database.
     """
 
-    def __init__(self, database_gateway: MongoGateWay):
+    def __init__(self, database_gateway: MongoGateway):
         self.database_gateway = database_gateway
 
     def get_credit_balance(self, guild_id: int) -> float:
