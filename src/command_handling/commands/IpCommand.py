@@ -40,7 +40,7 @@ class IpCommand(ServerCommand):
         """
         super().execute()
 
-        instance_data = self.mongo_gateway.find_instance_one(self.discord_msg.guild.id)
+        instance_data = self.database_gateway.find_instance_one(self.discord_msg.guild.id)
         ip_string = instance_data['ip']
 
         if ip_string == '':

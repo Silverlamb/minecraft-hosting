@@ -57,10 +57,12 @@ class UserMessageResponder:
         elif arg == 'server_started':
             await self.client.get_channel(channel_id).send(
                 "Server started successfully! Server address: ``{}``".format(args[0]))
-        elif arg == 'server_stopped':
-            await self.client.get_channel(channel_id).send(("Server stopped successfully! You were refunded {} credits "
+        elif arg == 'server_deduction_stop':
+            await self.client.get_channel(channel_id).send(("Billing stopped. You were refunded {} credits "
                                                             "for a partially used time interval. Your credit balance is "
-                                                            "{}").format(round(args[0], 3), round(args[1], 3)))
+                                                            "{}").format(round(args[0], 3), round(args[1], 3)))   
+        elif arg == 'server_stopped':
+            await self.client.get_channel(channel_id).send("Server stopped successfully!")
         elif arg == 'server_destroyed':
             await self.client.get_channel(channel_id).send("Server destroyed successfully!")
         elif arg == 'server_state_err':

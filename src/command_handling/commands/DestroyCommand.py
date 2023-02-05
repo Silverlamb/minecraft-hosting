@@ -41,7 +41,7 @@ class DestroyCommand(ServerAdminCommand):
         """
         super().execute()
 
-        threading.Thread(target=self.server_manager.server_destroy, args=(self.discord_msg.guild.id
+        threading.Thread(target=self.server_manager.server_destroy, args=(self.discord_msg.guild.id,
                                                                             )).start()
 
 

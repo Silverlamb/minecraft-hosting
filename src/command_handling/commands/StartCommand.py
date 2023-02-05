@@ -45,9 +45,13 @@ class StartCommand(ServerAdminCommand):
         """
         super().execute()
 
-        defaulted_responder = self.responder.copy_with_default_channel_id(self.discord_msg.channel.id)
-        self.credit_manager.start_deduction(self.discord_msg.guild.id, StartCommand.HOURLY_CREDIT_DEDUCTION,
-                                            defaulted_responder)
+        # TODO Hacky solution: The check - whether starting is allowed - should be extracted to command-level and
+        # thus wrapped around both the call to credit manager and the instance manager
+        instance_data = self.database_gateway.find_instance_one(self.discord_msg.guild_id)
+        if instance_data["server_state"] and not instance_data["server_present"] and not instance_data["is_process"]:
+            defaulted_responder = self.responder.copy_with_default_channel_id(self.discord_msg.channel.id)
+            self.credit_manager.start_deduction(self.discord_msg.guild.id, StartCommand.HOURLY_CREDIT_DEDUCTION,
+                                                defaulted_responder)
 
         threading.Thread(target=self.server_manager.server_start, args=(self.discord_msg.guild.id, 
                                                                          self.discord_msg.channel.id, 

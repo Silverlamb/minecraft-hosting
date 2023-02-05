@@ -70,7 +70,7 @@ class CreditManager:
         self.credit_column_data_gateway.add_credits(guild_id, not_used_cost)
 
         new_balance = self.credit_column_data_gateway.get_credit_balance(guild_id)
-        responder.send_remote_message('server_stopped', None, [not_used_cost, new_balance])
+        responder.send_remote_message('server_deduction_stop', None, [not_used_cost, new_balance])
 
     def _unregister_deduction_task(self, guild_id: int) -> None:
         """

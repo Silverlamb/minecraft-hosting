@@ -26,7 +26,7 @@ class StopCommand(ServerAdminCommand):
         """
         (See parent class)
         """
-        return StopCommand(self.responder, self.database_gateway, self.credit_manager)
+        return StopCommand(self.responder, self.database_gateway, self.server_manager, self.credit_manager)
 
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         """
@@ -47,7 +47,11 @@ class StopCommand(ServerAdminCommand):
                                                                          self.discord_msg.channel.id, 
                                                                          self.responder
                                                                          )).start()
-
-        self.credit_manager.stop_deduction(self.discord_msg.guild.id)
+        
+        # TODO Hacky solution: The check - whether starting is allowed - should be extracted to command-level and
+        # thus wrapped around both the call to credit manager and the instance manager
+        instance_data = self.database_gateway.find_instance_one(self.discord_msg.guild_id)
+        if instance_data["server_state"] and instance_data["server_present"] and not instance_data["is_process"]:
+            self.credit_manager.stop_deduction(self.discord_msg.guild.id)
 
 
