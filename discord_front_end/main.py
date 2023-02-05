@@ -1,4 +1,4 @@
-from bot import DiscordClient
+from discord_front_end.bot import DiscordClient
 
 """
 Main function to start the central module

@@ -1,31 +1,31 @@
 import threading
 
 from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
+from discord_front_end.command_handling.Command import Command
 from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
-from discord_front_end.credits.CreditManager import CreditManager
+from discord_front_end.credits.CreditColumnDataGateway import CreditColumnDataGateway
 from discord_front_end.utils.db import MongoGateWay
 
 
-class StopCommand(ServerAdminCommand):
+class CreditBalanceCommand(Command):
     """
-    Command to stop a game server.
+    Command to get the current balance of a guild.
     """
 
-    def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateWay, credit_manager: CreditManager):
-        """Creates a new stop command instance.
+    def __init__(self, responder: UserMessageResponder, credit_data_gateway: CreditColumnDataGateway):
+        """Creates a new ip command instance.
 
         Before this command can be executed, its arguments must be parsed into it.
         """
-        super().__init__("stop", responder, database_gateway)
+        super().__init__("credit balance", responder)
         self.discord_msg = None
-        self.credit_manager = credit_manager
+        self.credit_data_gateway = credit_data_gateway
 
     def __copy__(self):
         """
         (See parent class)
         """
-        return StopCommand(self.responder, self.database_gateway, self.credit_manager)
+        return CreditBalanceCommand(self.responder, self.credit_data_gateway)
 
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         """
@@ -42,9 +42,7 @@ class StopCommand(ServerAdminCommand):
         """
         super().execute()
 
-        threading.Thread(target=None, # TODO link stop backend
-                         args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
-
-        self.credit_manager.stop_deduction(self.discord_msg.guild.id)
+        balance = self.credit_data_gateway.get_credit_balance(self.discord_msg.guild.id)
+        self.responder.send_remote_message('current_balance', self.discord_msg.channel.id, [balance])
 
 

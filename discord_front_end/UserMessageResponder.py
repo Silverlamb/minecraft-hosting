@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 
 import discord
 
@@ -9,13 +10,31 @@ class UserMessageResponder:
     This class manages what precise messages are sent upon the respective events.
     """
 
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: discord.Client, default_channel_id: Optional[int]):
+        """
+        Creates a new user message responder
+        :param client: the discord client to use for sending messages
+        :param default_channel_id: the default channel to send messages to if it is not specified in the send method.
+                                    If set to None, the channel_id must always be specified for each send method
+        """
         self.client = client
+        self.default_channel_id = default_channel_id
 
-    def send_remote_message(self, event_name: str, channel_id, args=None):
+    def copy_with_default_channel_id(self, default_channel_id: int):
+        """ Creates a copy of this object with a new default channel id
+        """
+        return UserMessageResponder(self.client, default_channel_id)
+
+    def send_remote_message(self, event_name: str, channel_id: Optional[int], args: list = None) -> None:
         """
         Creates a new (background) task of a remote message (ie. one sent from outside the class)
+
+        If the channel id is set to None, the object's default channel id is used
         """
+
+        if channel_id is None:
+            channel_id = self.default_channel_id
+
         self.client.loop.create_task(self._remote_message(event_name, channel_id, args))
 
     def send_direct_message(self, id, msg):
@@ -39,7 +58,9 @@ class UserMessageResponder:
             await self.client.get_channel(channel_id).send(
                 "Server started successfully! Server address: ``{}``".format(args[0]))
         elif arg == 'server_stopped':
-            await self.client.get_channel(channel_id).send("Server stopped successfully!")
+            await self.client.get_channel(channel_id).send(("Server stopped successfully! You were refunded {} credits "
+                                                            "for a partially used time interval. Your credit balance is "
+                                                            "{}").format(round(args[0], 3), round(args[1], 3)))
         elif arg == 'server_destroyed':
             await self.client.get_channel(channel_id).send("Server destroyed successfully!")
         elif arg == 'server_state_err':
@@ -48,6 +69,9 @@ class UserMessageResponder:
                 "This might be because it is in a state that is not changeable from the command provided.",
                 "Try doing !server state to see which state it is"
             ))
+        elif arg == 'current_balance':
+            await self.client.get_channel(channel_id).send("Your guild's current balance is {} credits".format(
+                round(args[0], 2)))
         elif arg == 'insufficient_funds':
             await self.client.get_channel(channel_id).send("Insufficent amount of credits! Do !credit to see balance.")
         elif arg == 'credits_charge':
@@ -60,12 +84,12 @@ class UserMessageResponder:
                 "Either refill your credits or stop to server",
                 "The server will be shutdown once you can't pay credits anymore"
             ))
-        elif arg == 'credits_warning':
-            await self.client.get_channel(channel_id).send("{}! {}. {}.".format(
-                "Your credits will run out in the next hour",
-                "Either refill your credits or stop to server",
-                "The server will be shutdown once you can't pay credits anymore"
-            ))
+        elif arg == 'credits_one_hour_notification':
+            await self.client.get_channel(channel_id).send((
+                                                               "Your credits will run out in the next hour. "
+                                                               "Either refill your credits or stop the server. "
+                                                               "The server will be forcefully shutdown in {}min and {}s."
+                                                           ).format(args[0], round(args[1])))
         elif arg == 'credits_out':
             await self.client.get_channel(channel_id).send("Your credits ran out!")
         elif arg == 'server_stopped_forced':
@@ -97,6 +121,10 @@ class UserMessageResponder:
         elif arg == 'fetch_created_err':
             await self.client.get_channel(channel_id).send(
                 "You cannot back up a server that has just been created! Please start it once so I can back it up.")
+        elif arg == 'guild_not_registered':
+            await self.client.get_channel(channel_id).send(
+                "Your guild had not been registered yet. You are now registered in the system.")
+
         else:
             print("ERR: Arg '{}' does not exist!".format(arg))
 
