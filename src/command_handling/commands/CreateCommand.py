@@ -2,9 +2,9 @@ import threading
 
 import discord
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
-from discord_front_end.utils.db import MongoGateWay
+from src.UserMessageResponder import UserMessageResponder
+from src.command_handling.commands.ServerAdminCommand import ServerAdminCommand
+from src.utils.db import MongoGateWay
 
 """
 Command to create a game server.

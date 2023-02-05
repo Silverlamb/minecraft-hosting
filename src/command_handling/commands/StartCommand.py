@@ -1,10 +1,10 @@
 import copy
 import threading
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.ServerAdminCommand import ServerAdminCommand
-from discord_front_end.credits.CreditManager import CreditManager
-from discord_front_end.utils.db import MongoGateWay
+from src.UserMessageResponder import UserMessageResponder
+from src.command_handling.commands.ServerAdminCommand import ServerAdminCommand
+from src.credits.CreditManager import CreditManager
+from src.utils.db import MongoGateWay
 
 
 class StartCommand(ServerAdminCommand):

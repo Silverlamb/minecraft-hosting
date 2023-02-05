@@ -2,9 +2,9 @@ from abc import ABC
 
 import discord
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.Command import Command
-from discord_front_end.utils.db import MongoGateWay
+from src.UserMessageResponder import UserMessageResponder
+from src.command_handling.Command import Command
+from src.utils.db import MongoGateWay
 
 
 class ServerCommand(Command, ABC):

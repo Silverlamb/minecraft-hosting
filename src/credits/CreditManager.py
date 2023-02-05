@@ -1,8 +1,8 @@
 import asyncio
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.credits.CreditColumnDataGateway import CreditColumnDataGateway
-from discord_front_end.credits.FixedTimeIntervalCostThread import FixedTimeIntervalCostThread
+from src.UserMessageResponder import UserMessageResponder
+from src.credits.CreditColumnDataGateway import CreditColumnDataGateway
+from src.credits.FixedTimeIntervalCostThread import FixedTimeIntervalCostThread
 
 
 class CreditManager:

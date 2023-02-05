@@ -4,8 +4,8 @@ import discord
 import dotenv
 
 from command_handling.CommandParser import CommandParser
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.utils.db import MongoGateWay
+from src.UserMessageResponder import UserMessageResponder
+from src.utils.db import MongoGateWay
 
 """
 Discord class for discord client

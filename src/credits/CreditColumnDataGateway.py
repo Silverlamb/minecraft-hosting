@@ -1,4 +1,4 @@
-from discord_front_end.utils.db import MongoGateWay
+from src.utils.db import MongoGateWay
 
 
 class CreditColumnDataGateway:

@@ -1,16 +1,16 @@
 import copy
 from typing import Optional
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.CreateCommand import CreateCommand
-from discord_front_end.command_handling.commands.CreditBalanceCommand import CreditBalanceCommand
-from discord_front_end.command_handling.commands.DestroyCommand import DestroyCommand
-from discord_front_end.command_handling.commands.IpCommand import IpCommand
-from discord_front_end.command_handling.commands.StartCommand import StartCommand
-from discord_front_end.command_handling.commands.StopCommand import StopCommand
-from discord_front_end.credits.CreditColumnDataGateway import CreditColumnDataGateway
-from discord_front_end.credits.CreditManager import CreditManager
-from discord_front_end.utils.db import MongoGateWay
+from src.UserMessageResponder import UserMessageResponder
+from src.command_handling.commands.CreateCommand import CreateCommand
+from src.command_handling.commands.CreditBalanceCommand import CreditBalanceCommand
+from src.command_handling.commands.DestroyCommand import DestroyCommand
+from src.command_handling.commands.IpCommand import IpCommand
+from src.command_handling.commands.StartCommand import StartCommand
+from src.command_handling.commands.StopCommand import StopCommand
+from src.credits.CreditColumnDataGateway import CreditColumnDataGateway
+from src.credits.CreditManager import CreditManager
+from src.utils.db import MongoGateWay
 
 
 class CommandParser:

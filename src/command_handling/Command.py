@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
+from src.UserMessageResponder import UserMessageResponder
 
 """
 Abstract class that represents a general command.

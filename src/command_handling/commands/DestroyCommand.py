@@ -1,28 +1,29 @@
 import threading
 
-from discord_front_end.UserMessageResponder import UserMessageResponder
-from discord_front_end.command_handling.commands.ServerCommand import ServerCommand
-from discord_front_end.utils.db import MongoGateWay
+from src.UserMessageResponder import UserMessageResponder
+from src.command_handling.commands.ServerAdminCommand import ServerAdminCommand
+from src.command_handling.commands.ServerCommand import ServerCommand
+from src.utils.db import MongoGateWay
 
 
-class IpCommand(ServerCommand):
+class DestroyCommand(ServerAdminCommand):
     """
-    Command to get the ip of a game server.
+    Command to stop a game server.
     """
 
     def __init__(self, responder: UserMessageResponder, database_gateway: MongoGateWay):
-        """Creates a new ip command instance.
+        """Creates a new destroy command instance.
 
         Before this command can be executed, its arguments must be parsed into it.
         """
-        super().__init__("ip", responder, database_gateway)
+        super().__init__("destroy", responder, database_gateway)
         self.discord_msg = None
 
     def __copy__(self):
         """
         (See parent class)
         """
-        return IpCommand(self.responder, self.database_gateway)
+        return DestroyCommand(self.responder, self.database_gateway)
 
     def parse_arguments(self, arguments: list, discord_msg) -> None:
         """
