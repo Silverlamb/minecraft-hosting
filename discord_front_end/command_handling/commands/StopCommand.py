@@ -42,9 +42,9 @@ class StopCommand(ServerAdminCommand):
         """
         super().execute()
 
-        # TODO Check whether user has sufficient credits
-
         threading.Thread(target=None, # TODO link stop backend
                          args=(self.discord_msg.guild.id, self.discord_msg.channel.id)).start()
+
+        self.credit_manager.stop_deduction(self.discord_msg.guild.id)
 
 
