@@ -175,10 +175,14 @@ class InstanceManager:
         os.system('aws ec2 start-instances --region us-east-2 --instance-ids {}'.format(instance_id))
         self.state_ready_running(guild_id, instance_id)
         os.system('aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --instance-ids {} --output=text > {}/{}/ip.txt'.format(instance_id, self.guild_instances_path, guild_id))
-        with open("{}/{}/ip.txt".format(self.guild_instances_path, guild_id), "r") as f:
+        
+
+        
+        with open("{}../{}/{}/ip.txt".format(os.path.abspath(__file__).replace(os.path.basename(__file__), ''), self.guild_instances_path, guild_id), "r") as f:
             instance_ip = f.read()
-        os.system("cd {}/ansible; python3 write.py {}/{} {}".format(self.instance_file_path, self.guild_instances_path, guild_id, instance_ip))
-        os.system("cd {}/ansible; ansible-playbook on_start.yml -i ../../{}/{}/inventory".format(self.instance_file_path, self.guild_instances_path, guild_id))
+        os.system("cd {}/ansible; python3 write.py {}../{}/{} {}".format(self.instance_file_path, os.path.abspath(__file__).replace(os.path.basename(__file__), ''), self.guild_instances_path, guild_id, instance_ip))
+        os.system("cd {}/ansible; ansible-playbook on_start.yml -i ../../../{}/{}/inventory".format(
+            self.instance_file_path, self.guild_instances_path, guild_id))
         return instance_ip
 
     """
