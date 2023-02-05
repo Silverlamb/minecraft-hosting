@@ -4,6 +4,8 @@ import discord
 import dotenv
 
 from command_handling.CommandParser import CommandParser
+from discord_front_end.UserMessageResponder import UserMessageResponder
+from discord_front_end.utils.db import MongoGateWay
 
 """
 Discord class for discord client
@@ -14,6 +16,7 @@ class DiscordClient(discord.Client):
     BOT_TRIGGER = "!"
     MSG_CMD_RECEIVED = "Command {} received"
     MSG_CMD_NOT_PARSABLE = "Command '{}' not parsable"
+    MSG_CMD_SUCCESS = "Command successfully executed"
 
     """
     Sets and loads env variables in local os environment into token
@@ -27,7 +30,9 @@ class DiscordClient(discord.Client):
         dotenv.load_dotenv(self.dotenv_file)  # loads env variables in local os environment
         self.token = os.environ["DISCORD_TOKEN"]  # specific to discord client
         self.message_content = True
-        self.command_parser = CommandParser()
+
+        self.database_gateway = MongoGateWay()
+        self.command_parser = CommandParser(self.database_gateway, UserMessageResponder(self))
 
     """
     Handles Messages sent to the Bot
@@ -42,17 +47,22 @@ class DiscordClient(discord.Client):
         command = self.command_parser.parse_command(command_string, message)
 
         if command is None:
-            await message.channel.send(self.MSG_CMD_NOT_PARSABLE.format(message.content[1:]))
+            await self.send_response_message(message, self.MSG_CMD_NOT_PARSABLE.format(message.content[1:]))
             return
 
-        await message.channel.send(self.MSG_CMD_RECEIVED.format(command.get_name().upper()))
+        await self.send_response_message(message, self.MSG_CMD_RECEIVED.format(command.get_name().upper()))
 
         try:
             command.execute()
         except Exception as e:
             await message.channel.send(str(e))
 
+        await self.send_response_message(message, self.MSG_CMD_SUCCESS)
 
+
+    @staticmethod
+    async def send_response_message(message_to_respond_to: discord.Message, response_str: str):
+        await message_to_respond_to.channel.send(response_str)
 
 
 
