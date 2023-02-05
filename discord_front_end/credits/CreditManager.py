@@ -18,6 +18,8 @@ class CreditManager:
 
         # Map of guild_id to credit deduction task, if there is a credit deduction task running for that guild
         self.credit_deduction_task = {}
+        # Map of guild_id to the responder to use when following up on the related credit deduction task
+        self.responder_channel = {}
         self.deduction_sleep_time = 3600
 
     def start_deduction(self, guild_id: int, hourly_cost: float, responder: UserMessageResponder) -> None:
@@ -44,20 +46,27 @@ class CreditManager:
                                                                            self.deduction_sleep_time,
                                                                            self.credit_column_data_gateway, responder)
         self.credit_deduction_task[guild_id].start()
+        self.responder_channel[guild_id] = responder
 
     def stop_deduction(self, guild_id: int) -> None:
         """
         Stops the task that deducts credits from the credit balance of a guild on an hourly basis
         """
+
         if guild_id not in self.credit_deduction_task:
             raise Exception("There is no credit deduction task running for guild {}".format(guild_id))
 
         self.credit_deduction_task[guild_id].stop()
         uptime = self.credit_deduction_task[guild_id].get_uptime()
+        hourly_cost = self.credit_deduction_task[guild_id].get_hourly_cost()
+        responder = self.responder_channel[guild_id]
         del self.credit_deduction_task[guild_id]
+        del self.responder_channel[guild_id]
 
         # Deduct the cost for the last interval that was not finished
         not_used_seconds = self.deduction_sleep_time - (uptime % self.deduction_sleep_time)
-        not_used_cost = (not_used_seconds / self.deduction_sleep_time) * \
-                          self.credit_deduction_task[guild_id].get_hourly_cost()
+        not_used_cost = (not_used_seconds / self.deduction_sleep_time) * hourly_cost
         self.credit_column_data_gateway.add_credits(guild_id, not_used_cost)
+
+        new_balance = self.credit_column_data_gateway.get_credit_balance(guild_id)
+        responder.send_remote_message('server_stopped', None, [not_used_cost, new_balance])

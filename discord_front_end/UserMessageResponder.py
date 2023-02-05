@@ -58,7 +58,9 @@ class UserMessageResponder:
             await self.client.get_channel(channel_id).send(
                 "Server started successfully! Server address: ``{}``".format(args[0]))
         elif arg == 'server_stopped':
-            await self.client.get_channel(channel_id).send("Server stopped successfully!")
+            await self.client.get_channel(channel_id).send(("Server stopped successfully! You were refunded {} credits "
+                                                           "for a partially used time interval. Your credit balance is "
+                                                              "{}").format(round(args[0], 3), round(args[1], 3)))
         elif arg == 'server_destroyed':
             await self.client.get_channel(channel_id).send("Server destroyed successfully!")
         elif arg == 'server_state_err':
