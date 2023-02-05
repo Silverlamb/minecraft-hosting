@@ -220,7 +220,8 @@ class InstanceManager:
     """
     def remote_instance_stop(self, guild_id, instance_id):
         self.state_ready_running(guild_id, instance_id)
-        os.system("cd {}/ansible; ansible-playbook on_stop.yml -i ../../{}/{}/inventory".format(self.instance_file_path, self.guild_instances_path, guild_id))
+        os.system("cd {}/ansible; ansible-playbook on_stop.yml -i ../../../{}/{}/inventory".format(
+            self.instance_file_path, self.guild_instances_path, guild_id))
         os.system('aws ec2 stop-instances --region us-east-2 --instance-ids {}'.format(instance_id))
 
     """
@@ -241,7 +242,7 @@ class InstanceManager:
                         "is_process": False,
                         "ip": ""
                     })
-                responder.send_remote_message('server_stopped', channel_id)
+                responder.send_remote_message('server_stopped', channel_id, [])
                 print("Server stopped")
         except Exception as e:
             current_instance_data = self.mongo_gateway.find_instance_one(guild_id)
