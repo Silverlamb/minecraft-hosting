@@ -14,7 +14,7 @@ class FixedTimeIntervalCostThread(threading.Thread):
     """
 
     def __init__(self, guild_id: int, hourly_cost: float, sleep_time: int, credit_data_gateway: CreditColumnDataGateway,
-                 responder: UserMessageResponder):
+                 unregister_actions, responder: UserMessageResponder):
         """
         Creates a new thread that deducts credits from a guild's balance on an hourly basis
         :param guild_id: the guild of which to deduct
@@ -31,6 +31,9 @@ class FixedTimeIntervalCostThread(threading.Thread):
         self.sleep_time = sleep_time
         self.start_time = None
         self.responder = responder
+
+        # Hacky, but works: In case the task aborts, it has to unregister itself using this lambda
+        self.unregister_function = unregister_actions
 
     def get_uptime(self) -> int:
         """
@@ -72,6 +75,7 @@ class FixedTimeIntervalCostThread(threading.Thread):
                 actual_partial_cost = self.get_uptime() % self.sleep_time * self.hourly_cost
                 cost = min(balance, actual_partial_cost)  # Makes sure we don't deduct more than the balance
                 self.credit_data_gateway.deduct_credits(self.guild_id, cost)
+                self.unregister_function(self.guild_id)
                 return
 
             self.credit_data_gateway.deduct_credits(self.guild_id, self.hourly_cost)
